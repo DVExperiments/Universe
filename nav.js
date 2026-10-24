@@ -29,7 +29,7 @@
       ['Chamber', '#/'], ['Senators', '#/senators'], ['Bills', '#/bills'], ['Elections', '#/elections'], ['Laws', '#/laws'], ['Parties', '#/parties'], ['Records', '#/records'], ['About', '#/about']] },
     { id: 'weather', name: 'Weather', path: 'Weather/', color: '#7FB8E8', blurb: 'The Weather Bureau', items: [
       ['Now', '#/'], ['Forecast', '#/forecast'], ['Almanac', '#/almanac'], ['Storms', '#/storms'], ['Records', '#/records'], ['Forecaster', '#/forecaster'], ['About', '#/about']] },
-    { id: 'bookmaker', name: 'Bookmaker', path: 'Bookmaker/', color: '#F2D024', blurb: 'Odds on every race', items: [
+    { id: 'bookmaker', name: 'Bookmaker', path: 'Bookmaker/', color: '#E8C547', blurb: 'Odds on every race', items: [
       ['The board', ''], ['Results', '#results-title'], ['The regulars', '#regulars-title']] },
     { id: 'paper', name: 'Daily Pixel', path: 'DailyPixel/', color: '#E1E9EC', blurb: 'The newspaper', items: [
       ['Today’s edition', ''], ['Yesterday’s edition', () => '#' + day(-1)], ['Last week’s edition', () => '#' + day(-7)]] },
@@ -37,6 +37,8 @@
       ['Listen live', ''], ['The chart', '#chart-title'], ['New this week', '#new-title'], ['The presenters', '#shows-title']] },
     { id: 'school', name: 'Pixel High', path: 'PixelHigh/', color: '#3D7FE0', blurb: 'The city’s secondary school', items: [
       ['Home', '#/'], ['Students', '#/students'], ['Houses', '#/houses'], ['Calendar', '#/calendar'], ['Prom', '#/prom'], ['Yearbook', '#/yearbook'], ['Staff', '#/staff']] },
+    { id: 'jobs', name: 'Job Centre', path: 'JobCentre/', color: '#F2D024', blurb: 'Work, and looking for it', items: [
+      ['Today', '#/'], ['Vacancies', '#/vacancies'], ['The queue', '#/queue'], ['Employers', '#/employers'], ['Dream jobs', '#/dreams']] },
     { id: 'museum', name: 'Museum', path: 'Museum/', color: '#B08D4C', blurb: 'The history of the universe', items: [
       ['Hall of Champions', '#champions'], ['The Record Books', '#records'], ['Timeline', '#timeline'], ['The Law Library', '#laws'], ['The Archive', '#archive']] }
   ];
@@ -49,13 +51,13 @@
   position: relative; z-index: 60; background: var(--pu-bg); color: var(--pu-ink); font: 500 14px/1.2 var(--body, "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif);
   border-bottom: 1px solid #000; padding-top: env(safe-area-inset-top, 0px); -webkit-font-smoothing: antialiased; }
 .pu-bar * { box-sizing: border-box; }
-.pu-inner { max-width: 1240px; margin: 0 auto; padding: 0 16px; display: flex; align-items: stretch; gap: 4px; min-height: 42px; }
+.pu-inner { max-width: 1480px; margin: 0 auto; padding: 0 16px; display: flex; align-items: stretch; gap: 4px; min-height: 42px; }
 .pu-bar a { color: inherit; text-decoration: none; }
 .pu-brand { display: inline-flex; align-items: center; gap: 9px; padding: 0 12px 0 0; margin-right: 6px; font: 800 15px/1 var(--display, "Bricolage Grotesque", system-ui, sans-serif); letter-spacing: -0.01em; white-space: nowrap; border-right: 1px solid var(--pu-line); }
 .pu-mark { width: 10px; height: 10px; background: var(--pu-ink); box-shadow: 4px 4px 0 -1px #9BE22D; }
 .pu-sites { display: flex; align-items: stretch; list-style: none; margin: 0; padding: 0; flex: 1; min-width: 0; }
 .pu-site { position: relative; display: flex; }
-.pu-top { display: inline-flex; align-items: center; gap: 7px; padding: 0 11px; color: var(--pu-muted); white-space: nowrap; border-bottom: 2px solid transparent; }
+.pu-top { display: inline-flex; align-items: center; gap: 6px; padding: 0 8px; color: var(--pu-muted); white-space: nowrap; border-bottom: 2px solid transparent; }
 .pu-top i { width: 7px; height: 7px; background: var(--c); opacity: 0.85; }
 .pu-site:hover .pu-top, .pu-site.pu-open .pu-top, .pu-top:focus-visible { color: var(--pu-ink); background: var(--pu-hover); }
 .pu-site.pu-here .pu-top { color: var(--pu-ink); border-bottom-color: var(--c); }
@@ -73,8 +75,9 @@
 .pu-menu { display: none; margin-left: auto; align-self: center; background: none; border: 1px solid var(--pu-line); color: var(--pu-ink); font: 600 13px var(--body, system-ui); padding: 6px 12px; border-radius: 6px; cursor: pointer; }
 .pu-bar :focus-visible { outline: 2px solid #9BE22D; outline-offset: -2px; }
 .pu-panel { display: none; }
-@media (max-width: 1180px) { .pu-clock { display: none; } }
-@media (max-width: 1040px) {
+@media (max-width: 1580px) { .pu-clock { display: none; } }
+@media (max-width: 1300px) { .pu-wallet { display: none; } }
+@media (max-width: 1180px) {
   .pu-sites, .pu-status { display: none; }
   .pu-menu { display: inline-block; }
   .pu-here-name { display: inline; color: var(--pu-muted); font: 500 14px var(--body, system-ui); margin-left: 4px; }
@@ -87,7 +90,7 @@
   .pu-panel a[aria-current="page"], .pu-panel h2 a[aria-current="page"] { color: var(--pu-ink); }
   .pu-panel .pu-wallet-m { grid-column: 1 / -1; color: var(--pu-muted); border-top: 1px solid var(--pu-line); padding-top: 10px; }
 }
-@media (min-width: 1041px) { .pu-here-name { display: none; } }
+@media (min-width: 1181px) { .pu-here-name { display: none; } }
 @media (prefers-reduced-motion: no-preference) { .pu-drop { animation: pu-in 0.12s ease-out; } @keyframes pu-in { from { opacity: 0; transform: translateY(-3px); } } }
 @media print { .pu-bar { display: none; } }`;
 
