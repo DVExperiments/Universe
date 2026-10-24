@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>World health – Pixel Universe</title>
+<meta name="robots" content="noindex">
+<style>
+  :root { --bg: #0B1015; --surface: #121A21; --ink: #E1E9EC; --muted: #93A4AE; --line: #24323B; color-scheme: dark; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 15px/1.5 "IBM Plex Sans", system-ui, sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 60px; }
+  h1 { font: 800 2.2rem/1.1 "Bricolage Grotesque", system-ui, sans-serif; margin: 10px 0 6px; letter-spacing: -0.03em; }
+  p { color: var(--muted); }
+  button { font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); padding: 7px 12px; border-radius: 4px; cursor: pointer; }
+  table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+  td, th { text-align: left; padding: 7px 10px 7px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr.g th { padding-top: 22px; font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .n { text-align: right; color: var(--muted); white-space: nowrap; }
+  .b { display: inline-block; min-width: 44px; text-align: center; font-weight: 700; font-size: 0.8rem; padding: 2px 8px; border-radius: 3px; }
+  .b.ok { background: #143A27; color: #6FE3A2; } .b.warn { background: #3A3214; color: #F2D024; } .b.fail { background: #3D1418; color: #FF7A85; }
+  #summary { margin: 12px 0; display: flex; gap: 8px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<script src="nav.js" data-site="universe"></script>
+<main>
+  <p>The Pixel Universe</p>
+  <h1>World health</h1>
+  <p id="when"></p>
+  <p>Loads every simulation and checks that they are up, current, and agree with each other and with themselves. Read-only. Add <code>?at=2027-06-01T12:00</code> to check another moment. The first run takes a while: it computes the whole world.</p>
+  <div id="summary"></div>
+  <button type="button" id="rerun">Run the checks again</button>
+  <table><tbody id="checks"><tr><td>Loading the universe…</td></tr></tbody></table>
+</main>
+<script src="https://dvexperiments.github.io/Glacial/js/pixels.js"></script>
+<script src="https://dvexperiments.github.io/Glacial/js/sim.js"></script>
+<script src="https://dvexperiments.github.io/Glacial/js/league.js"></script>
+<script src="https://dvexperiments.github.io/Weather/universe.js"></script>
+<script src="https://dvexperiments.github.io/Senate/universe.js"></script>
+<script src="https://dvexperiments.github.io/City/universe.js"></script>
+<script src="https://dvexperiments.github.io/City/census.js"></script>
+<script src="https://dvexperiments.github.io/Exchange/universe.js"></script>
+<script src="https://dvexperiments.github.io/City/society.js"></script>
+<script src="https://dvexperiments.github.io/PixelFM/universe.js"></script>
+<script src="https://dvexperiments.github.io/DailyPixel/universe.js"></script>
+<script src="health.js"></script>
+</body>
+</html>

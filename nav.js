@@ -48,7 +48,7 @@
     { id: 'museum', name: 'Museum', path: 'Museum/', color: '#B08D4C', blurb: 'The history of the universe', items: [
       ['Hall of Champions', '#champions'], ['The Record Books', '#records'], ['Timeline', '#timeline'], ['The Law Library', '#laws'], ['The Archive', '#archive']] }
   ];
-  const HUB = { id: 'universe', name: 'Pixel Universe', path: 'Universe/', items: [['Everything, now', ''], ['The wire', '#wire']] };
+  const HUB = { id: 'universe', name: 'Pixel Universe', path: 'Universe/', items: [['Everything, now', ''], ['The wire', '#wire'], ['World health', 'health.html']] };
   const urlOf = (site, href) => BASE + site.path + (typeof href === 'function' ? href() : href || '');
 
   // ---------------------------------------------------------------- styles, scoped to the bar
