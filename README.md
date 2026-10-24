@@ -18,7 +18,7 @@ Follows the [Pixel Universe Shared Conventions](../Pixel_Universe_Shared_Convent
 
 Windows onto every site, each live and each a link to its site:
 
-- **Pixel City:** the city's own map, drawn from its tiles, with day and night, lit windows, blackouts, smog, and whatever the Senate has built.
+- **Pixel City:** the city's own map (City v3: data buses, the data stream, the frame border, and districts that behave like their names), with day and night, lit windows, blackouts, smog, and whatever the Senate has built. Needs City's `look.js` loaded before its `map.js`.
 - **Glacial:** the race in progress, pixel by pixel.
 - **The Daily Pixel:** today's front page.
 - **The Senate:** the countdown to the founding election; once it sits, the chamber's make-up and its latest news.

@@ -31,8 +31,10 @@
   }
 
   // ---------------------------------------------------------------- the city, drawn from its own map
-  const TILE = ['#1B3A57', '#CDB98A', '#54804B', '#2F5A36', '#5A6168', '#737A80', '#8A8F94', '#C98B6B', '#9AA3AD', '#D9A55B', '#7F9BB8', '#6B6259', '#8C7F6E', '#7A6A55', '#5E9E58', '#2D5C80', '#B9B1A2', '#857B6B', '#E0C060'];
-  const SITE = { coal: '#3B3835', solar: '#3E6FB0', wind: '#E6EEF2', park: '#5EB058', wildlife: '#3E8A4A' };
+  // City v3's palette: blank margin, frame border, substrate, noise field, data bus, signal trace, bus bridge, houses, apartments,
+  // shops, offices, render plants, caches, export buffers, colour growth, data stream, plaza, reserved site, landmark
+  const TILE = ['#03060D', '#BFEFFF', '#0C1422', '#0F5A3B', '#1FA86A', '#1B6F66', '#46D6FF', '#B04F8A', '#2A4A7A', '#C8A030', '#3D6FB0', '#C8541F', '#2E5A70', '#3DA9FF', '#2BD46E', '#0A74CF', '#4A5470', '#1A2030', '#C9D0FF'];
+  const SITE = { coal: '#FF6A2B', solar: '#1B4A9A', wind: '#9FB4C8', park: '#2BD46E', wildlife: '#1AA25B' };
   const hex = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
   function lit(i) { let h = i * 2654435761 >>> 0; h ^= h >>> 15; return (h % 100) / 100; } // fixed per tile: lights don't flicker
   // City's own map, as on the City page: buildings, ships, traffic, smoke, weather, lights and blackouts
@@ -85,18 +87,18 @@
     for (const s of st.sites || []) {
       const f = map.features[s.id];
       if (!f || s.state === 'empty') continue;
-      const c = s.state === 'operating' ? SITE[s.type] : '#A29A88';
+      const c = s.state === 'operating' ? SITE[s.type] : '#1E4A5C';
       for (let y = f.y; y < f.y + f.h; y++) for (let x = f.x; x < f.x + f.w; x++) colour[y * map.W + x] = c || colour[y * map.W + x];
     }
     const smog = Math.max(0, Math.min(0.4, ((st.aqi || 0) - 60) / 260));
     for (let i = 0; i < map.tiles.length; i++) {
       let [r, gg, b] = hex(colour[i]);
       const t = map.tiles[i], off = dark.has(map.district[i]);
-      const k = 1 - night * (off ? 0.86 : 0.74);
+      const k = 1 - night * (off ? 0.86 : 0.5);
       r *= k; gg *= k; b *= k;
       // windows light up at night, unless the district is in a blackout
-      if (night > 0.3 && !off && (t === 7 || t === 8 || t === 9 || t === 10 || t === 18) && lit(i) < (t === 8 || t === 10 ? 0.16 : 0.07)) { const w = 0.55 + lit(i * 7) * 0.4; r = 255 * w; gg = 205 * w; b = 120 * w; }
-      r = r * (1 - smog) + 140 * smog; gg = gg * (1 - smog) + 128 * smog; b = b * (1 - smog) + 100 * smog;
+      if (night > 0.3 && !off && (t === 7 || t === 8 || t === 9 || t === 10 || t === 18) && lit(i) < (t === 8 || t === 10 ? 0.16 : 0.07)) { const w = 0.55 + lit(i * 7) * 0.4; r = 200 * w; gg = 240 * w; b = 255 * w; }
+      r = r * (1 - smog) + 90 * smog; gg = gg * (1 - smog) + 75 * smog; b = b * (1 - smog) + 100 * smog;
       d[i * 4] = r; d[i * 4 + 1] = gg; d[i * 4 + 2] = b; d[i * 4 + 3] = 255;
     }
     cv.width = map.W; cv.height = map.H;
