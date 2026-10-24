@@ -39,6 +39,8 @@
       ['Home', '#/'], ['Students', '#/students'], ['Houses', '#/houses'], ['Calendar', '#/calendar'], ['Prom', '#/prom'], ['Yearbook', '#/yearbook'], ['Staff', '#/staff']] },
     { id: 'jobs', name: 'Job Centre', path: 'JobCentre/', color: '#F2D024', blurb: 'Work, and looking for it', items: [
       ['Today', '#/'], ['Vacancies', '#/vacancies'], ['The queue', '#/queue'], ['Employers', '#/employers'], ['Dream jobs', '#/dreams']] },
+    { id: 'exchange', name: 'Exchange', path: 'Exchange/', color: '#20C3AF', blurb: 'Every business, trading', items: [
+      ['Market', '#/'], ['Businesses', '#/businesses'], ['Register', '#/register'], ['About', '#/about']] },
     { id: 'museum', name: 'Museum', path: 'Museum/', color: '#B08D4C', blurb: 'The history of the universe', items: [
       ['Hall of Champions', '#champions'], ['The Record Books', '#records'], ['Timeline', '#timeline'], ['The Law Library', '#laws'], ['The Archive', '#archive']] }
   ];
