@@ -24,7 +24,7 @@
     { id: 'glacial', name: 'Glacial', path: 'Glacial/', color: '#FF5FA2', blurb: 'The world’s slowest race', items: [
       ['Live race', '#live'], ['Grand Prix', '#gp'], ['Standings', '#standings'], ['Pixels', '#pixels'], ['Archive', '#archive'], ['Records', '#records'], ['About', '#about']] },
     { id: 'city', name: 'City', path: 'City/', color: '#1FE38C', blurb: 'Sixteen districts, 82,640 pixels', items: [
-      ['Map', '#/'], ['Districts', '#/districts'], ['Power', '#/power'], ['Port', '#/port'], ['Census', 'census.html'], ['About', '#/about']] },
+      ['Map', '#/'], ['Districts', '#/districts'], ['Power', '#/power'], ['Port', '#/port'], ['Census', 'census.html'], ['Society', 'society.html'], ['About', '#/about']] },
     { id: 'senate', name: 'Senate', path: 'Senate/', color: '#E8A33D', blurb: 'Forty-eight senators, one chamber', items: [
       ['Chamber', '#/'], ['Senators', '#/senators'], ['Bills', '#/bills'], ['Elections', '#/elections'], ['Laws', '#/laws'], ['Parties', '#/parties'], ['Records', '#/records'], ['About', '#/about']] },
     { id: 'weather', name: 'Weather', path: 'Weather/', color: '#7FB8E8', blurb: 'The Weather Bureau', items: [
