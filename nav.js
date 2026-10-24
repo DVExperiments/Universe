@@ -35,6 +35,8 @@
       ['Today’s edition', ''], ['Yesterday’s edition', () => '#' + day(-1)], ['Last week’s edition', () => '#' + day(-7)]] },
     { id: 'radio', name: 'Pixel FM', path: 'PixelFM/', color: '#9BE22D', blurb: 'Radio on 88.8', items: [
       ['Listen live', ''], ['The chart', '#chart-title'], ['New this week', '#new-title'], ['The presenters', '#shows-title']] },
+    { id: 'school', name: 'Pixel High', path: 'PixelHigh/', color: '#3D7FE0', blurb: 'The city’s secondary school', items: [
+      ['Home', '#/'], ['Students', '#/students'], ['Houses', '#/houses'], ['Calendar', '#/calendar'], ['Prom', '#/prom'], ['Yearbook', '#/yearbook'], ['Staff', '#/staff']] },
     { id: 'museum', name: 'Museum', path: 'Museum/', color: '#B08D4C', blurb: 'The history of the universe', items: [
       ['Hall of Champions', '#champions'], ['The Record Books', '#records'], ['Timeline', '#timeline'], ['The Law Library', '#laws'], ['The Archive', '#archive']] }
   ];
