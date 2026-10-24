@@ -62,7 +62,11 @@ a { color: var(--link); }
 .cap b { color: var(--ink); font-weight: 600; }
 
 .screen { background: var(--screen); flex: 1; }
+/* City's own renderer draws into #city-view; the shield keeps it a view (no drag, no wheel) so the window opens City */
+.city-screen { position: relative; aspect-ratio: 4 / 3; flex: 1 0 auto; }
+#city-view { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
 #city-map { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; image-rendering: pixelated; image-rendering: crisp-edges; }
+.shield { position: absolute; inset: 0; }
 
 /* the race */
 .race { padding: 16px 16px 12px; color: var(--chrome-ink); }

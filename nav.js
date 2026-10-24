@@ -70,8 +70,8 @@
 .pu-menu { display: none; margin-left: auto; align-self: center; background: none; border: 1px solid var(--pu-line); color: var(--pu-ink); font: 600 13px var(--body, system-ui); padding: 6px 12px; border-radius: 6px; cursor: pointer; }
 .pu-bar :focus-visible { outline: 2px solid #9BE22D; outline-offset: -2px; }
 .pu-panel { display: none; }
-@media (max-width: 1000px) { .pu-clock { display: none; } }
-@media (max-width: 860px) {
+@media (max-width: 1180px) { .pu-clock { display: none; } }
+@media (max-width: 1040px) {
   .pu-sites, .pu-status { display: none; }
   .pu-menu { display: inline-block; }
   .pu-here-name { display: inline; color: var(--pu-muted); font: 500 14px var(--body, system-ui); margin-left: 4px; }
@@ -84,7 +84,7 @@
   .pu-panel a[aria-current="page"], .pu-panel h2 a[aria-current="page"] { color: var(--pu-ink); }
   .pu-panel .pu-wallet-m { grid-column: 1 / -1; color: var(--pu-muted); border-top: 1px solid var(--pu-line); padding-top: 10px; }
 }
-@media (min-width: 861px) { .pu-here-name { display: none; } }
+@media (min-width: 1041px) { .pu-here-name { display: none; } }
 @media (prefers-reduced-motion: no-preference) { .pu-drop { animation: pu-in 0.12s ease-out; } @keyframes pu-in { from { opacity: 0; transform: translateY(-3px); } } }
 @media print { .pu-bar { display: none; } }`;
 

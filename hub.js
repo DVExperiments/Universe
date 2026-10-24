@@ -35,10 +35,46 @@
   const SITE = { coal: '#3B3835', solar: '#3E6FB0', wind: '#E6EEF2', park: '#5EB058', wildlife: '#3E8A4A' };
   const hex = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
   function lit(i) { let h = i * 2654435761 >>> 0; h ^= h >>> 15; return (h % 100) / 100; } // fixed per tile: lights don't flicker
+  // City's own map, as on the City page: buildings, ships, traffic, smoke, weather, lights and blackouts
+  let view = null, cityState = null, cityWx = null, raf = 0, visible = true;
+  function cityLight(t) {
+    const W = U.climate, dl = W.normals(t).dayLength, h = (t % DAY) / H, rise = 12 - dl / 2, set = 12 + dl / 2;
+    if (h < rise - 0.75 || h > set + 0.75) return 0;
+    if (h < rise + 0.75) return (h - rise + 0.75) / 1.5;
+    if (h > set - 0.75) return (set + 0.75 - h) / 1.5;
+    return 1;
+  }
+  function startCityView() {
+    if (view || !window.CityMap || !ok(U.city) || !ok(U.climate)) return false;
+    try {
+      $('city-map').hidden = true;
+      const m = U.city.map();
+      view = window.CityMap($('city-view'), {});
+      // fill the window the way a photo fills a frame: zoom until the city covers it, centred
+      const cover = () => { const r = $('city-view').getBoundingClientRect(); if (r.width && r.height) view.focus(m.W / 2, m.H / 2, Math.max(r.width / m.W, r.height / m.H)); };
+      cover();
+      window.addEventListener('resize', cover);
+      if ('ResizeObserver' in window) new ResizeObserver(cover).observe($('city-view'));
+      const loop = () => { raf = 0; if (!visible || document.hidden) return; try { view.frame(cityState, cityLight(Date.now()), cityWx, Date.now()); } catch (e) { /* skip a frame */ } raf = requestAnimationFrame(loop); };
+      const wake = () => { if (!raf && visible && !document.hidden) raf = requestAnimationFrame(loop); };
+      if ('IntersectionObserver' in window) new IntersectionObserver((es) => { visible = es[0].isIntersecting; wake(); }).observe($('city-view'));
+      document.addEventListener('visibilitychange', wake);
+      view.wake = wake;
+      return true;
+    } catch (e) { view = null; return false; }
+  }
   function city() {
     const C = U.city, W = U.climate;
     if (!ok(C)) { $('city-cap').textContent = 'The city could not be reached. Reload the page to try again.'; return; }
     const now = Date.now(), map = C.map(), st = C.stateAt(now);
+    if (view || startCityView()) {
+      cityState = st; cityWx = W.sample(now);
+      view.wake();
+      cityCaption(map, st);
+      return;
+    }
+    // without City's renderer: a simple drawing of the map
+    $('city-view').hidden = true; $('city-map').hidden = false;
     const cv = $('city-map'), g = cv.getContext('2d'), img = g.createImageData(map.W, map.H), d = img.data;
     // daylight, the city's way: sunrise and sunset from the season's day length, in city time
     let night = 0;
@@ -65,8 +101,13 @@
     }
     cv.width = map.W; cv.height = map.H;
     g.putImageData(img, 0, 0);
+    cityCaption(map, st);
+  }
+  function cityCaption(map, st) {
+    const W = U.climate, now = Date.now(), dark = new Set(st.dark || []);
+    const l = ok(W) ? cityLight(now) : 1;
     const darkNames = map.districts.filter((x) => dark.has(x.id)).map((x) => x.name);
-    $('city-live').textContent = night > 0.5 ? 'Night' : night > 0 ? 'Dusk' : 'Day';
+    $('city-live').textContent = l === 0 ? 'Night' : l < 1 ? ((now % DAY) / H < 12 ? 'Dawn' : 'Dusk') : 'Day';
     $('city-cap').innerHTML = '<b>' + num(st.residents) + ' residents.</b> The grid is carrying ' + num(st.grid.demand) + ' MW, ' + Math.round((st.grid.solar + st.grid.wind) / Math.max(1, st.grid.demand) * 100) + '% of it clean. ' +
       'Air: ' + esc(st.air.toLowerCase()) + ' (' + st.aqi + ').' + (darkNames.length ? ' <b>Blackout in ' + esc(darkNames.join(', ')) + '.</b>' : ' The lights are on everywhere.');
   }
@@ -198,6 +239,7 @@
   const steps = [lede, race, city, weather, senate, book, news, census, museum, wire];
   (function next() { const s = steps.shift(); if (!s) return; try { s(); } catch (e) { console.error(e); } setTimeout(next, 0); })();
   setInterval(() => { lede(); try { race(); } catch (e) { /* keep the last frame */ } }, 5000);
-  setInterval(() => { for (const f of [city, weather, senate, book]) { try { f(); } catch (e) { /* keep the last view */ } } }, 60000);
+  setInterval(() => { try { city(); } catch (e) { /* keep the last view */ } }, 20000);
+  setInterval(() => { for (const f of [weather, senate, book]) { try { f(); } catch (e) { /* keep the last view */ } } }, 60000);
   setInterval(() => { for (const f of [news, census, museum, wire]) { try { f(); } catch (e) { /* keep the last view */ } } }, 10 * 60000);
 })();
