@@ -14,6 +14,7 @@
 (function () {
   'use strict';
   const BASE = 'https://dvexperiments.github.io/';
+  const RENEWAL = Date.UTC(2026, 10, 1); // the city's Renewal: from here its clock is UTC+12 (the Weather Bureau has the final word)
   const me = document.currentScript;
   const here = me && me.getAttribute('data-site');
 
@@ -192,7 +193,11 @@
   const clock = bar.querySelector('.pu-clock'), wallet = bar.querySelector('.pu-wallet'), walletM = bar.querySelector('.pu-wallet-m');
   function tick() {
     const d = new Date();
-    clock.textContent = d.toISOString().slice(11, 16) + ' UTC';
+    // city time: UTC until the Renewal, then City Standard Time (UTC+12), as the Weather Bureau keeps it
+    const W = window.PixelUniverse && window.PixelUniverse.climate;
+    const off = W && W.offsetAt ? W.offsetAt(d.getTime()) : (d.getTime() >= RENEWAL ? 12 * 3600000 : 0);
+    clock.textContent = new Date(d.getTime() + off).toISOString().slice(11, 16) + (off ? ' city time' : ' UTC');
+    clock.title = off ? 'City Standard Time, UTC+12. Races, laws and the newspaper turn over at 00:00 UTC.' : 'City time is UTC';
     let w = null;
     try { const raw = localStorage.getItem('pixeluniverse.wallet.v1'); w = raw ? JSON.parse(raw) : null; } catch (e) { w = null; }
     const text = w && typeof w.balance === 'number' ? Math.floor(w.balance).toLocaleString('en') + ' W' : 'Get 1,000 W';

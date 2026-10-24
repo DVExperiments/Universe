@@ -38,7 +38,7 @@
   // City's own map, as on the City page: buildings, ships, traffic, smoke, weather, lights and blackouts
   let view = null, cityState = null, cityWx = null, raf = 0, visible = true;
   function cityLight(t) {
-    const W = U.climate, dl = W.normals(t).dayLength, h = (t % DAY) / H, rise = 12 - dl / 2, set = 12 + dl / 2;
+    const W = U.climate, off = W.offsetAt ? W.offsetAt(t) : 0, dl = W.normals(t).dayLength, h = (((t + off) % DAY) + DAY) % DAY / H, rise = 12 - dl / 2, set = 12 + dl / 2;
     if (h < rise - 0.75 || h > set + 0.75) return 0;
     if (h < rise + 0.75) return (h - rise + 0.75) / 1.5;
     if (h > set - 0.75) return (set + 0.75 - h) / 1.5;
@@ -48,8 +48,8 @@
     if (view || !window.CityMap || !ok(U.city) || !ok(U.climate)) return false;
     try {
       $('city-map').hidden = true;
-      const m = U.city.map();
-      view = window.CityMap($('city-view'), {});
+      const m = view ? view.map : U.city.map(Date.now());
+      view = window.CityMap($('city-view'), { time: Date.now(), personHref: (id) => 'https://dvexperiments.github.io/City/census.html#/resident/' + id });
       // fill the window the way a photo fills a frame: zoom until the city covers it, centred
       const cover = () => { const r = $('city-view').getBoundingClientRect(); if (r.width && r.height) view.focus(m.W / 2, m.H / 2, Math.max(r.width / m.W, r.height / m.H)); };
       cover();
@@ -107,7 +107,8 @@
     const W = U.climate, now = Date.now(), dark = new Set(st.dark || []);
     const l = ok(W) ? cityLight(now) : 1;
     const darkNames = map.districts.filter((x) => dark.has(x.id)).map((x) => x.name);
-    $('city-live').textContent = l === 0 ? 'Night' : l < 1 ? ((now % DAY) / H < 12 ? 'Dawn' : 'Dusk') : 'Day';
+    const cityHour = (((now + (W && W.offsetAt ? W.offsetAt(now) : 0)) % DAY) + DAY) % DAY / H;
+    $('city-live').textContent = (l === 0 ? 'Night' : l < 1 ? (cityHour < 12 ? 'Dawn' : 'Dusk') : 'Day') + ', ' + String(Math.floor(cityHour)).padStart(2, '0') + ':' + String(Math.floor((cityHour % 1) * 60)).padStart(2, '0') + ' city time';
     $('city-cap').innerHTML = '<b>' + num(st.residents) + ' residents.</b> The grid is carrying ' + num(st.grid.demand) + ' MW, ' + Math.round((st.grid.solar + st.grid.wind) / Math.max(1, st.grid.demand) * 100) + '% of it clean. ' +
       'Air: ' + esc(st.air.toLowerCase()) + ' (' + st.aqi + ').' + (darkNames.length ? ' <b>Blackout in ' + esc(darkNames.join(', ')) + '.</b>' : ' The lights are on everywhere.');
   }
