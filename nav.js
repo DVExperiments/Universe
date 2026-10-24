@@ -39,6 +39,8 @@
       ['Home', '#/'], ['Students', '#/students'], ['Houses', '#/houses'], ['Calendar', '#/calendar'], ['Prom', '#/prom'], ['Yearbook', '#/yearbook'], ['Staff', '#/staff']] },
     { id: 'jobs', name: 'Job Centre', path: 'JobCentre/', color: '#F2D024', blurb: 'Work, and looking for it', items: [
       ['Today', '#/'], ['Vacancies', '#/vacancies'], ['The queue', '#/queue'], ['Employers', '#/employers'], ['Dream jobs', '#/dreams']] },
+    { id: 'bank', name: 'Bank', path: 'Bank/', color: '#C9A227', blurb: 'Lending to Pixel City', items: [
+      ['The Bank', '#/'], ['Business lending', '#/business'], ['Home loans', '#/homes'], ['About', '#/about']] },
     { id: 'exchange', name: 'Exchange', path: 'Exchange/', color: '#20C3AF', blurb: 'Every business, trading', items: [
       ['Market', '#/'], ['Businesses', '#/businesses'], ['Freight', '#/freight'], ['Register', '#/register'], ['About', '#/about']] },
     { id: 'museum', name: 'Museum', path: 'Museum/', color: '#B08D4C', blurb: 'The history of the universe', items: [
