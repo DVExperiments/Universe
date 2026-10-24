@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Pixel Universe</title>
+<meta name="description" content="Everything happening in the Pixel Universe, right now: the race, the city, the Senate, the weather, the news and the radio.">
+<meta name="theme-color" content="#0E171C">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 9 9%22 shape-rendering=%22crispEdges%22%3E%3Cpath fill=%22%230E171C%22 d=%22M0 0h9v9H0z%22/%3E%3Cpath fill=%22%23E1E9EC%22 d=%22M2 2h4v4H2z%22/%3E%3Cpath fill=%22%239BE22D%22 d=%22M5 5h2v2H5z%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="hub.css">
+</head>
+<body>
+<script src="nav.js" data-site="universe"></script>
+
+<header class="wrap intro">
+  <h1>The Pixel Universe</h1>
+  <p class="lede" id="lede">A small world that runs by itself, slowly. Everything below is happening now.</p>
+</header>
+
+<main class="wrap desk" id="main">
+  <section class="win w-city" data-href="https://dvexperiments.github.io/City/" style="--c:#C98B6B" aria-labelledby="t-city">
+    <header class="bar"><i aria-hidden="true"></i><h2 id="t-city">Pixel City</h2><span class="live" id="city-live"></span><a class="open" href="https://dvexperiments.github.io/City/">Open</a></header>
+    <div class="screen"><canvas id="city-map" width="160" height="120" aria-label="A live view of Pixel City"></canvas></div>
+    <p class="cap" id="city-cap">Lighting the city…</p>
+  </section>
+
+  <section class="win w-glacial" data-href="https://dvexperiments.github.io/Glacial/" style="--c:#FF5FA2" aria-labelledby="t-glacial">
+    <header class="bar"><i aria-hidden="true"></i><h2 id="t-glacial">Glacial</h2><span class="live">Live</span><a class="open" href="https://dvexperiments.github.io/Glacial/">Open</a></header>
+    <div class="screen race" id="race"><p class="dim">Replaying every race so far…</p></div>
+    <p class="cap" id="race-cap"></p>
+  </section>
+
+  <section class="win w-news" data-href="https://dvexperiments.github.io/DailyPixel/" style="--c:#E1E9EC" aria-labelledby="t-news">
+    <header class="bar"><i aria-hidden="true"></i><h2 id="t-news">The Daily Pixel</h2><span class="live" id="news-no"></span><a class="open" href="https://dvexperiments.github.io/DailyPixel/">Read</a></header>
+    <div class="body" id="news"><p class="dim">The presses are running…</p></div>
+  </section>
+
+  <section class="win w-senate" data-href="https://dvexperiments.github.io/Senate/" style="--c:#E8A33D" aria-labelledby="t-senate">
+    <header class="bar"><i aria-hidden="true"></i><h2 id="t-senate">The Senate</h2><span class="live" id="senate-live"></span><a class="open" href="https://dvexperiments.github.io/Senate/">Open</a></header>
+    <div class="body" id="senate"></div>
+  </section>
+
+  <section class="win w-weather" data-href="https://dvexperiments.github.io/Weather/" style="--c:#7FB8E8" aria-labelledby="t-weather">
+    <header class="bar"><i aria-hidden="true"></i><h2 id="t-weather">The Weather Bureau</h2><a class="open" href="https://dvexperiments.github.io/Weather/">Open</a></header>
+    <div class="body" id="weather"></div>
+  </section>
+
+  <section class="win w-radio" style="--c:#9BE22D" aria-labelledby="t-radio">
+    <header class="bar"><i aria-hidden="true"></i><h2 id="t-radio">Pixel FM</h2><span class="live">88.8</span><a class="open" href="https://dvexperiments.github.io/PixelFM/">Open</a></header>
+    <div id="pfm-dock"></div>
+  </section>
+
+  <section class="win w-book" data-href="https://dvexperiments.github.io/Bookmaker/" style="--c:#F2D024" aria-labelledby="t-book">
+    <header class="bar"><i aria-hidden="true"></i><h2 id="t-book">The Bookmaker</h2><span class="live" id="book-live"></span><a class="open" href="https://dvexperiments.github.io/Bookmaker/">Bet</a></header>
+    <div class="body" id="book"></div>
+  </section>
+
+  <section class="win w-census" data-href="https://dvexperiments.github.io/City/census.html" style="--c:#3FA66A" aria-labelledby="t-census">
+    <header class="bar"><i aria-hidden="true"></i><h2 id="t-census">The Census Office</h2><a class="open" href="https://dvexperiments.github.io/City/census.html">Open</a></header>
+    <div class="body" id="census"></div>
+  </section>
+
+  <section class="win w-museum" data-href="https://dvexperiments.github.io/Museum/" style="--c:#B08D4C" aria-labelledby="t-museum">
+    <header class="bar"><i aria-hidden="true"></i><h2 id="t-museum">The Museum</h2><a class="open" href="https://dvexperiments.github.io/Museum/">Visit</a></header>
+    <div class="body" id="museum"></div>
+  </section>
+
+  <section class="win w-wire" id="wire" style="--c:#8496A0" aria-labelledby="t-wire">
+    <header class="bar"><i aria-hidden="true"></i><h2 id="t-wire">The wire</h2><span class="live">The last 24 hours, everywhere</span></header>
+    <ol class="wire" id="wire-list"><li class="dim">Gathering reports…</li></ol>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  <p>The Pixel Universe is a set of small websites that share one world. Nothing is stored on a server: every page works out the world from the date, so everyone sees the same thing at the same moment. Times are city time, which is UTC.</p>
+</footer>
+
+<!-- the universe, upstream first. Each window copes if its site cannot be reached. -->
+<script>window.PixelUniverseOptions = Object.assign(window.PixelUniverseOptions || {}, { senateSkipGlacial: true });</script>
+<script src="shared.js"></script>
+<script src="https://dvexperiments.github.io/Glacial/js/pixels.js"></script>
+<script src="https://dvexperiments.github.io/Glacial/js/sim.js"></script>
+<script src="https://dvexperiments.github.io/Glacial/js/league.js"></script>
+<script src="https://dvexperiments.github.io/Weather/universe.js"></script>
+<script src="https://dvexperiments.github.io/Senate/universe.js"></script>
+<script src="https://dvexperiments.github.io/City/universe.js"></script>
+<script src="https://dvexperiments.github.io/City/census.js"></script>
+<script src="https://dvexperiments.github.io/Bookmaker/universe.js"></script>
+<script src="https://dvexperiments.github.io/DailyPixel/universe.js"></script>
+<script src="https://dvexperiments.github.io/PixelFM/universe.js"></script>
+<script src="https://dvexperiments.github.io/PixelFM/js/audio.js"></script>
+<script src="https://dvexperiments.github.io/PixelFM/js/voice.js"></script>
+<script src="https://dvexperiments.github.io/PixelFM/js/widget.js"></script>
+<script src="hub.js"></script>
+</body>
+</html>
