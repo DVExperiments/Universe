@@ -80,26 +80,38 @@
 .pu-status { display: flex; align-items: center; gap: 14px; margin-left: auto; padding-left: 10px; color: var(--pu-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .pu-status a:hover { color: var(--pu-ink); }
 .pu-clock { text-decoration: none; color: inherit; border-bottom: 1px dotted currentColor; cursor: help; }
-.pu-panel .pu-clock-m { grid-column: 1 / -1; color: var(--pu-muted); margin: 0; }
-.pu-panel .pu-clock-m a { color: inherit; }
 .pu-menu { display: none; margin-left: auto; align-self: center; background: none; border: 1px solid var(--pu-line); color: var(--pu-ink); font: 600 13px var(--body, system-ui); padding: 6px 12px; border-radius: 6px; cursor: pointer; }
 .pu-bar :focus-visible { outline: 2px solid #9BE22D; outline-offset: -2px; }
 .pu-panel { display: none; }
+.pu-here-name { display: none; }
 .pu-bar .pu-squeezed { display: none; }
-@media (max-width: 1180px) {
-  .pu-sites, .pu-status { display: none; }
-  .pu-menu { display: inline-block; }
-  .pu-here-name { display: inline; color: var(--pu-muted); font: 500 14px var(--body, system-ui); margin-left: 4px; }
-  .pu-brand { border-right: 0; }
-  .pu-bar.pu-mobile-open .pu-panel { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 18px; padding: 8px 16px 18px; max-height: calc(100vh - 50px); overflow-y: auto; border-top: 1px solid var(--pu-line); }
-  .pu-panel section { padding: 8px 0; }
-  .pu-panel h2 { margin: 0 0 4px; font: 700 15px var(--display, system-ui); display: flex; align-items: center; gap: 7px; }
-  .pu-panel h2 i { width: 7px; height: 7px; background: var(--c); }
-  .pu-panel a { display: block; padding: 6px 0; color: var(--pu-muted); }
-  .pu-panel a[aria-current="page"], .pu-panel h2 a[aria-current="page"] { color: var(--pu-ink); }
-  .pu-panel .pu-wallet-m { grid-column: 1 / -1; color: var(--pu-muted); border-top: 1px solid var(--pu-line); padding-top: 10px; }
-}
-@media (min-width: 1181px) { .pu-here-name { display: none; } }
+/* compact: when the sites don't fit across the bar, one Menu button opens the panel */
+.pu-bar.pu-compact .pu-sites, .pu-bar.pu-compact .pu-status { display: none; }
+.pu-bar.pu-compact .pu-menu { display: inline-block; }
+.pu-bar.pu-compact .pu-here-name { display: inline; color: var(--pu-muted); font: 500 14px var(--body, system-ui); margin-left: 4px; }
+.pu-bar.pu-compact .pu-brand { border-right: 0; }
+.pu-bar.pu-compact.pu-mobile-open .pu-panel { display: block; max-height: calc(100vh - 50px); overflow-y: auto; border-top: 1px solid var(--pu-line); }
+.pu-pin { max-width: 1840px; margin: 0 auto; padding: 6px 16px 16px; }
+.pu-p-label { margin: 12px 0 6px; font: 600 11px/1 var(--body, system-ui); letter-spacing: 0.08em; text-transform: uppercase; color: var(--pu-muted); }
+.pu-p-here h2 { margin: 0; font: 700 17px var(--display, system-ui); display: flex; align-items: center; gap: 8px; }
+.pu-p-here h2 i, .pu-p-name i { width: 8px; height: 8px; background: var(--c); flex: none; }
+.pu-p-areas { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 4px; }
+.pu-p-areas a { padding: 6px 11px; border: 1px solid var(--pu-line); border-radius: 999px; color: var(--pu-muted); font-size: 13px; white-space: nowrap; }
+.pu-p-areas a:hover, .pu-p-areas a:focus-visible { color: var(--pu-ink); background: var(--pu-hover); }
+.pu-p-areas a[aria-current="page"] { color: var(--pu-ink); border-color: var(--c); }
+.pu-p-sites { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0 18px; }
+.pu-p-row { display: flex; align-items: center; }
+.pu-p-name { flex: 1; min-width: 0; display: flex; align-items: center; gap: 9px; padding: 9px 0; color: var(--pu-ink); }
+.pu-p-name span { white-space: nowrap; }
+.pu-p-name small { color: var(--pu-muted); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.pu-p-more { flex: none; width: 34px; height: 34px; background: none; border: 0; border-radius: 6px; color: var(--pu-muted); cursor: pointer; font-size: 13px; }
+.pu-p-more:hover { background: var(--pu-hover); color: var(--pu-ink); }
+.pu-p-more[aria-expanded="true"] { transform: rotate(180deg); }
+.pu-p-sites .pu-p-areas { margin: 0 0 10px 17px; }
+.pu-p-areas[hidden] { display: none; }
+.pu-p-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--pu-line); color: var(--pu-muted); }
+.pu-p-foot a { color: var(--pu-muted); }
+.pu-p-foot a:hover { color: var(--pu-ink); }
 @media (prefers-reduced-motion: no-preference) { .pu-drop { animation: pu-in 0.12s ease-out; } @keyframes pu-in { from { opacity: 0; transform: translateY(-3px); } } }
 @media print { .pu-bar { display: none; } }`;
 
@@ -139,9 +151,16 @@
       '<div class="pu-status"><a class="pu-clock" href="' + BASE + 'City/#/time"></a><a class="pu-wallet" href="' + BASE + 'Bookmaker/" title="Your play money, kept in this browser"></a></div>' +
       '<button type="button" class="pu-menu" aria-expanded="false">Menu</button>' +
     '</div>' +
-    '<div class="pu-panel">' + SITES.map((s) => '<section style="--c:' + s.color + '"><h2><i aria-hidden="true"></i><a href="' + BASE + s.path + '"' + (s.id === here ? ' aria-current="page"' : '') + '>' + esc(s.name) + '</a></h2>' +
-      s.items.map((x, k) => item(s, k)).join('') + '</section>').join('') +
-      '<p class="pu-wallet-m"></p><p class="pu-clock-m"><a href="' + BASE + 'City/#/time"></a></p></div>';
+    // the menu panel: the site you're on and its pages first, then every site in one line each (its pages a tap away)
+    '<div class="pu-panel"><div class="pu-pin">' +
+      (current ? '<section class="pu-p-here" style="--c:' + current.color + '"><p class="pu-p-label">You\u2019re in</p><h2><i aria-hidden="true"></i><a href="' + BASE + current.path + '">' + esc(current.name) + '</a></h2>' +
+        '<div class="pu-p-areas">' + current.items.map((x, k) => item(current, k)).join('') + '</div></section>' : '') +
+      '<p class="pu-p-label">' + (current ? 'Elsewhere in the universe' : 'The universe') + '</p><ul class="pu-p-sites">' +
+      SITES.filter((s) => s !== current).map((s) => '<li style="--c:' + s.color + '"><div class="pu-p-row"><a class="pu-p-name" href="' + BASE + s.path + '"><i aria-hidden="true"></i><span>' + esc(s.name) + '</span><small>' + esc(s.blurb) + '</small></a>' +
+        '<button type="button" class="pu-p-more" aria-expanded="false" aria-label="' + esc(s.name) + ' pages">\u25be</button></div>' +
+        '<div class="pu-p-areas" hidden>' + s.items.map((x, k) => item(s, k)).join('') + '</div></li>').join('') + '</ul>' +
+      '<div class="pu-p-foot"><a class="pu-clock-m" href="' + BASE + 'City/#/time" title="About time"></a><a class="pu-wallet-m" href="' + BASE + 'Bookmaker/" title="Your play money, kept in this browser"></a></div>' +
+    '</div></div>';
 
   const style = document.createElement('style');
   style.textContent = css;
@@ -200,11 +219,15 @@
   sites.forEach((li) => li.addEventListener('mouseleave', () => li.classList.remove('pu-shut')));
   function toggleMobile(v) { bar.classList.toggle('pu-mobile-open', v); menuBtn.setAttribute('aria-expanded', String(v)); menuBtn.textContent = v ? 'Close' : 'Menu'; }
   menuBtn.addEventListener('click', () => toggleMobile(!bar.classList.contains('pu-mobile-open')));
+  bar.querySelectorAll('.pu-p-more').forEach((b) => b.addEventListener('click', () => {
+    const open = b.getAttribute('aria-expanded') !== 'true', areas = b.parentNode.nextElementSibling;
+    b.setAttribute('aria-expanded', String(open)); areas.hidden = !open;
+  }));
   // a link to a section of this same page: close the menus as it is followed
   bar.addEventListener('click', (e) => { const a = e.target.closest('.pu-drop a, .pu-panel a'); if (a) { sites.forEach((o) => o.classList.remove('pu-open')); toggleMobile(false); } });
 
   // ---------------------------------------------------------------- the clock and the wallet
-  const clockM = bar.querySelector('.pu-clock-m a');
+  const clockM = bar.querySelector('.pu-clock-m');
   const clock = bar.querySelector('.pu-clock'), wallet = bar.querySelector('.pu-wallet'), walletM = bar.querySelector('.pu-wallet-m');
   function tick() {
     const d = new Date();
@@ -222,21 +245,25 @@
     }
     clock.textContent = new Date(ms + off).toISOString().slice(11, 16) + (off ? ' city time' : ' UTC') + (pd ? ' \u00b7 ' + pd : '');
     clock.title = 'About time';
-    if (clockM) clockM.textContent = 'City time ' + new Date(ms + off).toISOString().slice(11, 16) + (pd ? ', ' + pd : '') + '. About time';
+    if (clockM) clockM.textContent = new Date(ms + off).toISOString().slice(11, 16) + (off ? ' city time' : ' UTC') + (pd ? ' \u00b7 ' + pd : '');
     let w = null;
     try { const raw = localStorage.getItem('pixeluniverse.wallet.v1'); w = raw ? JSON.parse(raw) : null; } catch (e) { w = null; }
     const text = w && typeof w.balance === 'number' ? Math.floor(w.balance).toLocaleString('en') + ' W' : 'Get 1,000 W';
     if (wallet.textContent !== text) wallet.textContent = text;
-    walletM.textContent = 'Your balance: ' + text;
+    walletM.textContent = (w ? 'Balance ' : '') + text;
   }
   // The status sits beside the sites only while everything fits: the clock goes first, then the wallet, so nothing
   // ever overlaps the sites (the menu panel shows both on narrow screens).
   const siteList = bar.querySelector('.pu-sites');
   function fit() {
     if (!siteList) return;
-    clock.classList.remove('pu-squeezed'); wallet.classList.remove('pu-squeezed');
-    if (siteList.scrollWidth > siteList.clientWidth + 1) clock.classList.add('pu-squeezed');
-    if (siteList.scrollWidth > siteList.clientWidth + 1) wallet.classList.add('pu-squeezed');
+    const over = () => siteList.scrollWidth > siteList.clientWidth + 1;
+    const wasOpen = bar.classList.contains('pu-mobile-open');
+    bar.classList.remove('pu-compact'); clock.classList.remove('pu-squeezed'); wallet.classList.remove('pu-squeezed');
+    if (over()) clock.classList.add('pu-squeezed');
+    if (over()) wallet.classList.add('pu-squeezed');
+    if (over()) bar.classList.add('pu-compact'); // still too many sites for the width: one Menu button instead
+    else if (wasOpen) toggleMobile(false);
   }
   tick(); fit();
   window.addEventListener('resize', fit);

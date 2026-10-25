@@ -48,7 +48,7 @@ How it behaves:
 - **Mouse:** hover a site to see its areas, and click its name to go there.
 - **Touch:** the first tap opens a site's menu, and the second follows the link.
 - **Keyboard:** Tab moves between sites, Down opens a menu and moves through it, and Escape closes it.
-- **Narrow screens:** one Menu button lists every site and area.
+- **Narrower screens:** whenever the sites don't fit across the bar (whatever the screen), the clock steps aside first, then the wallet, and then one Menu button takes their place. The menu shows the site you're in with its pages, then every other site on one line with what it is; the arrow beside a site shows its pages. The city time and your balance sit at the bottom.
 - **Current place:** the bar highlights the site you're on and the area you're in, and keeps up as the site changes its own route.
 
 ## Shared helpers
