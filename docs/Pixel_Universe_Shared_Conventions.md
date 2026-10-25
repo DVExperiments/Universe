@@ -45,7 +45,8 @@ Since Society, the world loop is wider: the Senate reads Society (elections, a f
 
 - **Never read ahead.** A run may only ask another for days it has already finished. Reading City's history 30 days ahead for speed once caused infinite recursion; everything that touches the Senate is read one day at a time.
 - **Taste and opinion are separate runs.** Society's crazes read only the map and the weather, so Pixel FM, the Exchange and the Senate can read them freely; its opinions read the economy and are read by the Senate with a fortnight's lag.
-- **Forward runs are re-entrant for earlier days.** A nested question about an earlier day is answered from checkpoints, never by moving the running state.
+- **Forward runs are re-entrant for earlier days.** A nested question about an earlier day is answered from checkpoints, never by moving the running state, and never by reading the running state either: a run that has moved on must answer for an earlier day from what it recorded then (City keeps the state at the start of each day; Society keeps each day's rivalries).
+- **One answer per moment.** A figure cached for a whole day is computed at a fixed moment of that day (its start), never at whichever moment happened to be asked first.
 
 ### Load order
 

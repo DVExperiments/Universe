@@ -159,6 +159,18 @@
       const a = JSON.stringify(S.stateAt(T - 7 * DAY)), b = JSON.stringify(S.stateAt(T - 7 * DAY));
       return [a === b ? 'ok' : 'fail', a === b ? 'Identical' : 'Different answers for the same moment'];
     });
+    // the answer for a past moment mustn't depend on how far the run has gone: a fresh city, run only that far, agrees
+    await check('Determinism', 'Pixel City, a week ago, after the run has moved on', () => {
+      if (!C.create) return ['warn', 'This version of the city cannot make a fresh copy'];
+      const a = JSON.stringify(C.stateAt(T - 7 * DAY)), b = JSON.stringify(C.create().stateAt(T - 7 * DAY));
+      return [a === b ? 'ok' : 'fail', a === b ? 'Identical' : 'The city\u2019s answer for a week ago depends on what was asked before'];
+    });
+    await check('Determinism', 'The census, a week ago, morning and evening', () => {
+      const d = T - 7 * DAY - ((T - 7 * DAY) % DAY);
+      const a = JSON.stringify(K.stateAt(d + 20 * 3600000)), b = JSON.stringify(K.stateAt(d + 2 * 3600000));
+      const same = JSON.stringify(Object.assign(JSON.parse(a), { time: 0 })) === JSON.stringify(Object.assign(JSON.parse(b), { time: 0 }));
+      return [same ? 'ok' : 'fail', same ? 'The same figures all day' : 'The day\u2019s figures depend on which moment was asked first'];
+    });
   }
   document.getElementById('when').textContent = at ? 'Checking the universe as it stood at ' + at + ' UTC.' : 'Checking the universe as it stands now.';
   document.getElementById('rerun').onclick = () => run();
