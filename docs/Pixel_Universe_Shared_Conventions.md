@@ -1,6 +1,6 @@
 # Pixel Universe: Shared Conventions
 
-Oct 23, 2026 · @Dylan · revised for City v3, the Exchange, Society, the Bank and the University
+Oct 25, 2026 · @Dylan · revised for City v3, the Exchange, Society, the Bank, the University and the Pixel calendar
 
 ## Purpose and core principles
 
@@ -11,7 +11,7 @@ The Pixel Universe is a set of static GitHub Pages sites that share one world, b
 3. **Dependencies flow one way.** A site may read from sites upstream of it, never downstream. No cycles.
 4. **Cosmetic influence only across sites.** One site may change how another looks or reads, never what happens in it. Race outcomes, schedules and ratings are never affected by anything outside Glacial.
 5. **History never gets rewritten.** Any change that would alter past results is handled as a new era (see Hosting, repo layout, versioning and eras).
-6. **Everything happens slowly, is tracked, and is reported with total sincerity.**
+6. **Everything happens slowly, is tracked, and is reported with total sincerity.** Moments unfold at real speed; lives run on the Pixel calendar, one Pixel Year per calendar month (see Pixel time).
 
 ## Site map and dependency order
 
@@ -63,7 +63,7 @@ The universe epoch is Glacial's existing `G.EPOCH` (in `js/league.js`), so every
 
 ### Daily rhythm
 
-The universe runs on one daily beat, and **00:00 UTC is the moment everything new begins**: the Daily Crawl starts, new laws take effect, and the newspaper turns its page. That is 1pm in New Zealand during daylight saving and noon in winter; the universe stays on UTC and local times shift.
+The universe runs on one daily beat, and **00:00 UTC is the moment everything new begins**: the Daily Crawl starts, new laws take effect, and the newspaper turns its page. That is 1pm in New Zealand during daylight saving and noon in winter; the universe stays on UTC and local times shift. Each real day spans about twelve pixel days, so the Senate sits roughly once every twelve days of pixel life and each newspaper edition covers nearly a pixel fortnight.
 
 | UTC | NZ (daylight saving) | What happens |
 | --- | --- | --- |
@@ -73,6 +73,41 @@ The universe runs on one daily beat, and **00:00 UTC is the moment everything ne
 | 00:00 | 1pm | Race starts; passed laws take effect; new newspaper edition |
 
 On Grand Prix days (the 1st of each month) the Senate is in recess, so the race has the day to itself.
+
+### Pixel time
+
+Days run on UTC, but lives run on the **Pixel calendar**: one Pixel Year passes every calendar month, starting at 00:00 UTC on the 1st, so every Grand Prix is New Year's Day. Moments still unfold at real speed; the Pixel calendar exists so that a resident's schooling, career, family and death can be followed from start to finish.
+
+| Real time | Pixel time |
+| --- | --- |
+| 1 calendar month | 1 Pixel Year (the Grand Prix opens it) |
+| 1 day | about 12 pixel days |
+| about 2 hours | 1 pixel day |
+| 1 year | 12 Pixel Years |
+
+- **A Pixel Year has 360 pixel days**: twelve pixel months of 30 days. Calendar months run 28 to 31 days, so a pixel day lasts from about 1 hour 52 minutes (February) to about 2 hours 4 minutes (31-day months).
+- **Years count from the epoch.** December 2025 is Year 1, so Glacial's first anniversary on 1 December 2026 opens Year 13. Pixel dates are written year, month, day, e.g. `13-04-12`.
+- **One helper, integer maths only.** `G.pixelTime(t)` in `js/shared.js` returns `{ year, month, day, dayOfYear }`. The products stay far below 2^53, so every browser gets the same answer:
+
+```js
+const d = new Date(t);
+const y = d.getUTCFullYear(), m = d.getUTCMonth();
+const start = Date.UTC(y, m, 1), next = Date.UTC(y, m + 1, 1);
+const dayOfYear = Math.floor((t - start) * 360 / (next - start)); // 0 to 359
+const year = (y - 2025) * 12 + m - 10;                            // December 2025 = Year 1
+const month = Math.floor(dayOfYear / 30) + 1, day = (dayOfYear % 30) + 1;
+```
+
+| Clock | Used for |
+| --- | --- |
+| Real UTC days | Glacial races, the Daily Crawl and Grand Prix; betting, odds and the visitor bankroll; Senate sittings and votes; newspaper editions; the one-day lag rule; event `time` |
+| Pixel calendar | Ages, births and deaths; schooling and university terms; careers and staff turnover; loan and mortgage terms; wages, rents and interest quoted per year; terms of office and election cycles; seasons (from the Climate Reform); ecosystem generations |
+
+- **The world loop still steps one real day at a time.** Each step covers about twelve pixel days; systems that count in pixel time advance by however many pixel days the step actually contains (from `G.pixelTime`), never by a fixed twelve.
+- **Durations are quoted in Pixel Years.** A three-Year Senate term means an election every three months; a 25-Year mortgage runs just over two real years; the fortnight's lag on election swings is about half a Pixel Year of opinion slowly settling.
+- **Proposed lifespans:** school from 5 to 18, working life from 18 to 65, life expectancy around 70 Pixel Years (about six real years). See Open questions.
+- **The sixteen Glacial pixels stand outside the Pixel calendar.** They never age, which the press treats as a matter of quiet civic pride.
+- **Display:** pages show pixel dates for lives and institutions, and real UTC or local times for races, betting and sittings. The newspaper dates each edition both ways.
 
 ## Randomness
 
@@ -90,7 +125,7 @@ Glacial already defines the shared functions in `js/sim.js`: `G.rng(seed)` (a mu
 
 ### Start dates
 
-Each system that changes what happens declares its start date, and must be live before it: working lives 30 November 2026; freight and Society 1 December 2026; the Bank 1 February 2027; migration, glitches and the University 1 March 2027; Society-driven elections from May 2027; rents 1 June 2027; wellbeing, choices and staff turnover 1 September 2027. Changes that only explain or display (causes, the map, the health dashboard) can go live at any time.
+The Pixel calendar is defined back to the epoch, so any system can count in it from its own start date. The Climate Reform (seasons on the Pixel Year) takes effect 1 December 2026. Each system that changes what happens declares its start date, and must be live before it: working lives 30 November 2026; freight and Society 1 December 2026; the Bank 1 February 2027; migration, glitches and the University 1 March 2027; Society-driven elections from May 2027; rents 1 June 2027; wellbeing, choices and staff turnover 1 September 2027. Changes that only explain or display (causes, the map, the health dashboard) can go live at any time.
 
 ## Event format
 
@@ -117,6 +152,7 @@ Every site describes notable happenings as events in one shared shape, so the ne
 | `importance` | 1 (trivia) to 5 (front page). The newspaper uses it to pick headlines. |
 | `data` | Site-specific details. Readers must tolerate fields they don't know. |
 | `headline` | One plain sentence, written in-universe, so any reader can show the event without understanding it. Never changed once published. |
+| `data.pixel_date` | Optional: the Pixel date of the event, e.g. `13-04-12`. `time` stays the source of truth; readers may show either. |
 | `data.causes` | Optional: why it happened, as `[{ cause, label, share }]` (share in %). Added without changing headlines; readers that know it explain the event. |
 
 Sources in use: `glacial`, `weather`, `senate`, `city`, `bookmaker`, `commerce`, `freight`, `bank`, `society`, `university`, `radio`, `paper`, `museum`.
@@ -187,10 +223,10 @@ Every visitor gets the same play money, on the same schedule, however much they 
 | Currency | Watts (W) |
 | Starting bankroll | 1,000 W on first visit |
 | Minimum stake | 10 W |
-| Monthly stipend | 500 W, credited on the first visit on or after the 1st (Grand Prix day) |
+| Monthly stipend | 500 W, credited on the first visit on or after the 1st (Grand Prix day, the Pixel New Year); in-universe, the visitor's annual salary |
 | Missed months | No back pay; one stipend per calendar month |
 | Hoarding | Allowed; no cap on balance |
-| Annual reset | Every wallet returns to 1,000 W at 00:00 UTC on 1 January, then January's stipend is added as usual |
+| Great Settlement | Every wallet returns to 1,000 W at 00:00 UTC on 1 January, then January's stipend is added as usual |
 | Stray sparks bonus | 25 to 100 W per spark caught |
 
 - **Stray sparks** are escaped energy pixels that appear briefly at random spots across the city. Clicking one returns it to the grid and the residents tip you.
@@ -198,16 +234,16 @@ Every visitor gets the same play money, on the same schedule, however much they 
 - **Roughly two or three sparks a day**, at unannounced times, so catching one feels lucky rather than like a chore.
 - **Everything is stored locally.** Clearing browser data restarts the bankroll at 1,000 W. Without a server there's no way to stop someone editing their own balance, so there are no cross-visitor leaderboards for bettors.
 
-In-universe, the annual reset is the **closing of the energy year**: the pixels settle their accounts, and the newspaper can run an end-of-year piece on the season's biggest pixel winners and losers among residents. The universe stays free and server-free for now; visitor leaderboards and server-side records are a possible future step if the project grows.
+Visitors stay on real time. In-universe, the 1 January reset is the **Great Settlement**, held once every twelve Pixel Years: the pixels settle their accounts, and the newspaper can run a piece on the twelve Years' biggest pixel winners and losers among residents. The universe stays free and server-free for now; visitor leaderboards and server-side records are a possible future step if the project grows.
 
 ## Weather, climate and ecosystem
 
-Seasons follow the Southern Hemisphere: summer peaks in January, winter in July. Weather comes from two layers, and neither ever touches race outcomes.
+Seasons follow the Southern Hemisphere on the Pixel Year: summer peaks at New Year (Grand Prix day) and winter in the seventh pixel month, around the middle of each calendar month, so each season lasts about a real week. Before the Climate Reform on 1 December 2026, seasons followed the real calendar (summer peaking in January, winter in July); that history is frozen as the Climate's first era. Weather comes from two layers, and neither ever touches race outcomes.
 
-- **Climate (root).** A pure function of time giving season, temperature, rain and wind fronts that take days to arrive. Glacial's existing day/night effect stays as it is and never reads weather.
+- **Climate (root).** A pure function of time giving season, temperature, rain and wind fronts that take several pixel days (some hours) to arrive. Glacial's existing day/night effect stays as it is and never reads weather.
 - **Ecosystem (world loop).** Modifies the climate locally based on what the city did yesterday. Pollution from power plants and traffic builds smog, warms the city slightly, and shifts what lives there. Parks, clean-energy laws and quiet days let it recover.
 - **Living things.** Pixel birds, insects and plants have populations that rise and fall with season and pollution, tracked like any other statistic. Migrations, blooms and die-offs make news.
-- **Feedback loop.** Smog raises city health complaints, the Senate debates clean-air bills, laws change the city's power mix, and the ecosystem slowly responds. Each step lags a day, so a full cycle plays out over weeks.
+- **Feedback loop.** Smog raises city health complaints, the Senate debates clean-air bills, laws change the city's power mix, and the ecosystem slowly responds. Each step lags a real day, so a full cycle plays out over real weeks, several Pixel Years.
 - **The Weather Bureau** displays both layers, publishes a forecaster pixel's imperfect daily predictions with a running accuracy record, and reports air quality.
 - **Elsewhere,** weather sets skies and lighting on every site, crowd sizes at the stadium, and pixel bettors' superstitions at the Bookmaker.
 
@@ -226,7 +262,7 @@ Each site is its own public repo under `DVExperiments`, published with GitHub Pa
 
 - **Shared helpers (RNG, seed hashing, event helpers)** live in Glacial's repo as `js/shared.js` until a second site needs them, then move to a small `Universe` repo that every site loads first.
 - **Versioning:** each `universe.js` carries a semantic version. A change that alters past results is a major version bump and needs an era.
-- **Eras:** to change rules without rewriting history, freeze the old era (keep its code, or bake its results into a JSON snapshot) and start the new rules from a declared date. Present it in-universe: a new racing season, a constitutional reform.
+- **Eras:** to change rules without rewriting history, freeze the old era (keep its code, or bake its results into a JSON snapshot) and start the new rules from a declared date. Present it in-universe: a new racing season, a constitutional reform. The first is the Climate Reform of 1 December 2026, which moved the seasons onto the Pixel Year.
 - **Snapshots:** if replaying history gets slow, a site may ship a checkpoint JSON of state at a past date and simulate only from there.
 
 ## Visual and tone rules
@@ -238,7 +274,7 @@ Every site should look and sound like it belongs to Glacial.
 - **The sixteen Glacial pixels are celebrities** across the universe and can be referenced anywhere by their names from `js/pixels.js`.
 - **Stats everywhere.** Every actor has a profile, history and records page.
 - **Deadpan voice.** Commentary and headlines are written like serious sports or political journalism about trivial things. No winking at the joke.
-- **Slow motion.** Nothing should change faster than a careful watcher would notice. Big moments are rare and earned.
+- **Slow moments, fast lives.** Within a day, nothing should change faster than a careful watcher would notice, and big moments are rare and earned. Over months, lives should visibly move: the Pixel calendar exists so a watcher can follow a resident from school to retirement.
 
 ## The digital society
 
@@ -262,6 +298,7 @@ Before building any new site, confirm:
 - [ ] It has a building in the city (and appears in the map's Buildings panel).
 - [ ] Every page that loads the Senate loads the whole chain, in order.
 - [ ] Its first effects start on a declared date after it goes live.
+- [ ] It declares which of its quantities count in real days and which in Pixel time.
 - [ ] World health still passes.
 
 Open questions:
@@ -270,5 +307,6 @@ Open questions:
 - [x] Betting: a Bookmaker building with pixel bettors moving the odds; visitors bet on Glacial.
 - [x] Weather Bureau will exist (see Weather Bureau).
 - [x] Senate first sitting: proposed for 3 December 2026, Glacial's first anniversary, at 19:00 UTC (8am NZ).
-- [ ] Bankroll: hoarding allowed, full wallet reset each 1 January (decided; see Visitor bankroll).
-- [ ] Seasons: Southern Hemisphere, with a city-influenced ecosystem (decided; see Weather, climate and ecosystem).
+- [ ] Bankroll: hoarding allowed, full wallet reset at each Great Settlement on 1 January (decided; see Visitor bankroll).
+- [x] Seasons: Southern Hemisphere on the Pixel Year from the Climate Reform (1 December 2026), with a city-influenced ecosystem (see Weather, climate and ecosystem).
+- [ ] Pixel lifespans: proposed life expectancy of 70 Pixel Years (about six real years). Shorter lives (25 to 30 Years) would let a whole life be followed within two to three real years.
