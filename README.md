@@ -29,6 +29,16 @@ Windows onto every site, each live and each a link to its site:
 
 Each window copes on its own if its site can't be reached.
 
+## The emergent behaviour log (`emergence.html`)
+
+A record of things that actually happened in the universe that nobody wrote. Its window sits near the top of the hub, beside Pixel FM, and the full log is at `emergence.html` (add `?at=` to read it as it stood at another moment).
+
+- **Observed only.** Each entry is found by a watcher (`emergence.js`) reading every site's published events, and is logged only once its whole chain has happened. Every link is a real event, shown with its site and time. Nothing is invented.
+- **How it's connected.** Each entry says whether the parts are *linked* (the sites really read one another), *one system* (many actors inside one site, each deciding alone) or a *coincidence* (the sites never read one another).
+- **Hypothetical examples are kept apart.** The page explains what each watcher looks for with a made-up example, in a dashed box labelled "Hypothetical example · this has not happened", using no real names. They never appear in the log.
+- **The watchers:** smog answered by the Senate and Society; a storm felt across three or more sites; a coal closure, blackouts and a bill to bring coal back; a craze that became a colour law; a site closed twice; weather and power-demand records together; rebels deciding a vote; the forecaster calling fine weather inside a named storm; four business closures in a district in a fortnight; a boom and bust in one good; an outsider at 9.00 or longer; a storm over the Grand Prix.
+- **API:** `PixelUniverse.emergence.entriesAt(t)` (newest first), `entriesBetween(from, to)`, `watchers()`. It reads the Weather Bureau, City, the Senate, the Exchange (with freight and the Bank), Society and the Bookmaker; any that are missing are skipped. Adding a watcher is adding one object to `WATCHERS`.
+
 ## The universe bar
 
 One bar across the top of every page: every site, each with a dropdown of its areas, plus city time and the visitor's balance. Each site keeps its own tabs underneath, the way an app has its own toolbar.

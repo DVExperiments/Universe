@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Emergent behaviour log · The Pixel Universe</title>
+<meta name="description" content="Things that actually happened in the Pixel Universe that nobody wrote, each traced through the universe's own records.">
+<meta name="theme-color" content="#0E171C">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 9 9%22 shape-rendering=%22crispEdges%22%3E%3Cpath fill=%22%230E171C%22 d=%22M0 0h9v9H0z%22/%3E%3Cpath fill=%22%23E1E9EC%22 d=%22M2 2h4v4H2z%22/%3E%3Cpath fill=%22%23FF8A5C%22 d=%22M5 5h2v2H5z%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="hub.css">
+<style>
+  .log-main { padding-bottom: 48px; }
+  .travel { background: var(--surface); border-left: 3px solid var(--link); padding: 10px 14px; margin: 0 0 18px; }
+  .how { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 6px 0 26px; }
+  .how div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .how h2 { margin: 6px 0 4px; font: 700 1.02rem/1.2 var(--display); }
+  .how p { margin: 0; color: var(--muted); font-size: 0.9375rem; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+  .filters button { font: 600 0.875rem var(--body); padding: 6px 13px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+  .filters button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .entries { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+  .entry { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+  .entry .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; color: var(--muted); font-size: 0.875rem; }
+  .entry .observed { color: var(--ink); font-weight: 600; }
+  .entry h3 { margin: 6px 0 6px; font: 800 1.3rem/1.2 var(--display); letter-spacing: -0.01em; }
+  .entry > p { margin: 0 0 10px; }
+  .entry .via { color: var(--muted); font-size: 0.9375rem; }
+  .chain { list-style: none; margin: 12px 0 0; padding: 0 0 0 14px; border-left: 2px solid var(--line); }
+  .chain li { position: relative; padding: 4px 0 8px 6px; font-size: 0.9375rem; }
+  .chain li::before { content: ""; position: absolute; left: -20px; top: 11px; width: 10px; height: 10px; background: var(--c, #8496A0); }
+  .chain .src { color: var(--muted); font-size: 0.8125rem; display: block; }
+  .watchers { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .watcher { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .watcher h3 { margin: 6px 0 4px; font: 700 1.05rem/1.2 var(--display); }
+  .watcher p { margin: 0 0 8px; font-size: 0.9375rem; }
+  .watcher .seen { color: var(--muted); font-size: 0.8125rem; }
+  .hypo { border: 1.5px dashed var(--line); border-radius: 8px; padding: 9px 12px; margin: 8px 0 6px; color: var(--muted); font-size: 0.9rem; font-style: italic; }
+  .hypo b { display: block; font-style: normal; font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+  h2.section { font: 800 1.6rem/1.1 var(--display); letter-spacing: -0.02em; margin: 40px 0 6px; }
+  .section-lede { margin: 0 0 16px; color: var(--muted); max-width: 70ch; }
+  @media (max-width: 860px) { .how, .watchers { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body>
+<script src="nav.js" data-site="universe"></script>
+
+<header class="wrap intro">
+  <h1>Emergent behaviour log</h1>
+  <p class="lede">Things that actually happened in the Pixel Universe that nobody wrote. No site is told to make any of them happen; each was found in the universe’s own records after it had happened.</p>
+</header>
+
+<main class="wrap log-main" id="main">
+  <p class="travel" id="travel" hidden></p>
+  <section class="how" aria-label="How the log is kept">
+    <div><span class="kind linked">Linked</span><h2>One thing led to another</h2><p>The sites involved really do read one another, so each part helped cause the next. Nobody planned the whole chain.</p></div>
+    <div><span class="kind one">One system</span><h2>Many acting alone</h2><p>Many senators, businesses or bettors inside one site, each deciding for themselves, adding up to something none of them chose.</p></div>
+    <div><span class="kind coincidence">Coincidence</span><h2>No connection at all</h2><p>The sites involved never read one another. It simply happened at the same time, and is logged so that nobody mistakes it for a cause.</p></div>
+  </section>
+
+  <h2 class="section">Observed</h2>
+  <p class="section-lede">Every entry below happened. Each is logged only once its whole chain has happened, and every link is a real event from a site’s own record, listed underneath with the date it was published.</p>
+  <div class="filters" role="group" aria-label="Show">
+    <button type="button" data-k="" aria-pressed="true">Everything</button>
+    <button type="button" data-k="linked" aria-pressed="false">Linked</button>
+    <button type="button" data-k="one system" aria-pressed="false">One system</button>
+    <button type="button" data-k="coincidence" aria-pressed="false">Coincidence</button>
+  </div>
+  <ol class="entries" id="entries"><li class="entry"><p class="dim" style="color:var(--muted)">Reading the universe’s records, from the first Daily Crawl to now…</p></li></ol>
+
+  <h2 class="section">What the watchers look for</h2>
+  <p class="section-lede">Each watcher reads every site’s published events for one kind of pattern. The examples in dashed boxes are hypothetical: they show what a watcher would notice, and have not happened.</p>
+  <ul class="watchers" id="watchers"></ul>
+</main>
+
+<footer class="wrap foot">
+  <p>The log is worked out in your browser from the date, like everything in the Pixel Universe, so every visitor sees the same entries at the same moment. Pixels age at a rate of one year per month: <a href="https://dvexperiments.github.io/City/#/time">about time</a>.</p>
+</footer>
+
+<script>window.PixelUniverseOptions = Object.assign(window.PixelUniverseOptions || {}, { senateSkipGlacial: true });</script>
+<script src="shared.js"></script>
+<script src="https://dvexperiments.github.io/Glacial/js/pixels.js"></script>
+<script src="https://dvexperiments.github.io/Glacial/js/sim.js"></script>
+<script src="https://dvexperiments.github.io/Glacial/js/league.js"></script>
+<script src="https://dvexperiments.github.io/Weather/universe.js"></script>
+<script src="https://dvexperiments.github.io/Senate/universe.js"></script>
+<script src="https://dvexperiments.github.io/City/universe.js"></script>
+<script src="https://dvexperiments.github.io/City/census.js"></script>
+<script src="https://dvexperiments.github.io/Exchange/universe.js"></script>
+<script src="https://dvexperiments.github.io/City/society.js"></script>
+<script src="https://dvexperiments.github.io/Bookmaker/universe.js"></script>
+<script src="emergence.js"></script>
+<script src="emergence-page.js"></script>
+</body>
+</html>

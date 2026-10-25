@@ -30,6 +30,7 @@ Sites are listed upstream first. Each may read only from sites above it in this 
 | Bookmaker | Reader | Glacial, world loop | Its own odds and pages |
 | The newspaper | Reader | Everything | Nothing |
 | Pixel FM, Pixel High, Job Centre, University, Bank site, Museum, Universe hub | Readers | Anything upstream | Their own pages only (Pixel FM plays Society's song crazes) |
+| Emergent behaviour log (Universe `emergence.js`) | Reader | Every site's events | Nothing; it only records what the others did |
 
 The universe has three tiers:
 
@@ -158,7 +159,7 @@ Every site describes notable happenings as events in one shared shape, so the ne
 | `data.pixel_date` | Optional: the Pixel date of the event, e.g. `13-04-12`. `time` stays the source of truth; readers may show either. |
 | `data.causes` | Optional: why it happened, as `[{ cause, label, share }]` (share in %). Added without changing headlines; readers that know it explain the event. |
 
-Sources in use: `glacial`, `weather`, `senate`, `city`, `bookmaker`, `commerce`, `freight`, `bank`, `society`, `university`, `radio`, `paper`, `museum`.
+Sources in use (the emergent behaviour log reads all of them, so keep `data` fields stable once published): `glacial`, `weather`, `senate`, `city`, `bookmaker`, `commerce`, `freight`, `bank`, `society`, `university`, `radio`, `paper`, `museum`.
 
 Events are generated, not stored: each site exposes a function that returns its events for a time range.
 

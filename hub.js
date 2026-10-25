@@ -272,6 +272,17 @@
     $('uni').innerHTML = '<p class="big">' + num(u.students) + '</p><p class="p muted">pixels studying. ' + (u.graduates ? num(u.graduates) + ' graduates, ' + num(u.graduatesWorking) + ' of them in work.' : 'The first graduates collect their diplomas on 1 December, graduation day.') + '</p>';
   }
 
+  // ---------------------------------------------------------------- the emergent behaviour log
+  const KIND = { linked: ['Linked', 'linked'], 'one system': ['One system', 'one'], coincidence: ['Coincidence', 'coincidence'] };
+  function emerge() {
+    const M = U.emergence;
+    if (!M) { unreachable('emerge', 'The log'); return; }
+    const es = M.entriesAt(Date.now()), shown = es.slice(0, 4);
+    $('emerge').innerHTML = (shown.length ? '<ul class="emerge">' + shown.map((e) => '<li><div class="meta"><span class="kind ' + KIND[e.connection][1] + '">' + KIND[e.connection][0] + '</span><time>' + esc(fmtDate(e.time)) + '</time></div>' +
+      '<h3>' + esc(e.title) + '</h3><p>' + esc(e.text) + '</p></li>').join('') + '</ul>' : '<p class="dim">Nothing unexpected has happened yet. The watchers are reading every site.</p>') +
+      '<p class="emerge-foot">' + num(es.length) + ' observed so far, each one a chain of real events from the universe\u2019s own records. Nothing here is made up. <a href="emergence.html">The full log, and what the watchers look for</a>.</p>';
+  }
+
   // ---------------------------------------------------------------- the wire
   const SOURCES = { glacial: ['Glacial', '#FF5FA2'], weather: ['Weather', '#7FB8E8'], senate: ['Senate', '#E8A33D'], city: ['City', '#1FE38C'], bookmaker: ['Bookmaker', '#F2D024'],
     census: ['Census', '#3FA66A'], radio: ['Pixel FM', '#9BE22D'], museum: ['Museum', '#B08D4C'], commerce: ['Exchange', '#20C3AF'], freight: ['Freight', '#46D6FF'], bank: ['Bank', '#C9A227'], society: ['Society', '#FF5FA2'], school: ['Pixel High', '#3D8BFF'] };
@@ -289,10 +300,10 @@
   }
 
   // ---------------------------------------------------------------- open the windows, one at a time, so the page appears at once
-  const steps = [lede, race, city, weather, senate, book, news, census, museum, exchange, bank, society, school, jobs, uni, wire];
+  const steps = [lede, race, city, weather, senate, book, news, census, museum, exchange, bank, society, school, jobs, uni, wire, emerge];
   (function next() { const s = steps.shift(); if (!s) return; try { s(); } catch (e) { console.error(e); } setTimeout(next, 0); })();
   setInterval(() => { lede(); try { race(); } catch (e) { /* keep the last frame */ } }, 5000);
   setInterval(() => { try { city(); } catch (e) { /* keep the last view */ } }, 20000);
   setInterval(() => { for (const f of [weather, senate, book]) { try { f(); } catch (e) { /* keep the last view */ } } }, 60000);
-  setInterval(() => { for (const f of [news, census, museum, exchange, bank, society, school, jobs, uni, wire]) { try { f(); } catch (e) { /* keep the last view */ } } }, 10 * 60000);
+  setInterval(() => { for (const f of [news, census, museum, exchange, bank, society, school, jobs, uni, wire, emerge]) { try { f(); } catch (e) { /* keep the last view */ } } }, 10 * 60000);
 })();
