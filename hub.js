@@ -222,12 +222,60 @@
       (R.closest && R.closest.id ? '<li>Closest finish: ' + (Math.round(R.closest.px * 10) / 10) + ' pixels</li>' : '') + '</ul>';
   }
 
+
+  // ---------------------------------------------------------------- the newer sites: one small window each
+  const latest = (src, days, min) => { try { const e = src.eventsBetween(Date.now() - days * DAY, Date.now()).filter((x) => x.importance >= (min || 2)).pop(); return e ? '<p class="p">' + esc(e.headline) + '.</p>' : ''; } catch (e) { return ''; } };
+  const fmtDate = (ms) => new Date(ms).toLocaleDateString('en-NZ', { day: 'numeric', month: 'long', year: 'numeric' });
+  function exchange() {
+    const X = U.commerce;
+    if (!ok(X)) { unreachable('exchange', 'The Exchange'); return; }
+    const st = X.stateAt(Date.now());
+    if (!st.started) { $('exchange').innerHTML = '<p class="p muted">The trading floor opens with the city.</p>'; return; }
+    $('exchange').innerHTML = '<p class="big">' + st.confidence.toFixed(1) + '</p><p class="p muted">business confidence. ' + num(st.open) + ' businesses trading; the shopping basket stands at ' + st.cpi.toFixed(1) + '.</p>' + latest(X, 14);
+  }
+  function bank() {
+    const B = U.bank;
+    if (!B || !B.ready()) { unreachable('bank', 'The Bank'); return; }
+    const b = B.stateAt(Date.now());
+    if (!b.open) { $('bank').innerHTML = '<p class="big">1 Feb</p><p class="p muted">The Bank of Pixel City opens on 1 February 2027, and takes over the city\u2019s credit.</p>'; return; }
+    $('bank').innerHTML = '<p class="big">' + b.rate + '%</p><p class="p muted">the Bank\u2019s rate. Capital ' + b.capitalRatio + '% of its lending; ' + num(b.borrowerCount) + ' businesses borrowing.</p>' + latest(B, 45);
+  }
+  function society() {
+    const S = U.society;
+    if (!S || !S.ready()) { unreachable('society', 'Society'); return; }
+    const st = S.stateAt(Date.now());
+    if (!st.started) { $('society').innerHTML = '<p class="p muted">Pixel City Society begins with the December Grand Prix: communities, crazes and opinions.</p>'; return; }
+    const fads = st.fads.slice(0, 3).map((f) => '<div class="fadrow"><span class="sw" style="--c:' + (f.hex || (f.category === 'song' ? '#9BE22D' : '#FF5FA2')) + '"></span><b>' + esc(f.category === 'song' ? 'A song on Pixel FM' : f.category === 'product' ? f.item + 's' : f.item) + '</b><span>' + f.share.toFixed(0) + '%</span></div>').join('');
+    $('society').innerHTML = (st.city ? '<p class="big">' + st.city.mood.toFixed(0) + '</p><p class="p muted">the city\u2019s mood, out of 100.</p>' : '') + (fads || '<p class="p muted">No crazes at the moment.</p>');
+  }
+  function jobs() {
+    const Lb = U.labour;
+    if (!Lb || !Lb.ready()) { unreachable('jobs', 'The Job Centre'); return; }
+    const lm = Lb.labourAt(Date.now());
+    if (!lm) { $('jobs').innerHTML = '<p class="p muted">Working lives begin on 30 November 2026, and the Job Centre opens on 7 December.</p>'; return; }
+    $('jobs').innerHTML = '<p class="big">' + lm.rate + '%</p><p class="p muted">of pixels who want work are looking for it. ' + num(lm.employed) + ' in work' + (lm.studying ? ', ' + num(lm.studying) + ' studying' : '') + '.</p>';
+  }
+  function school() {
+    const P = U.school;
+    if (!P || !P.ready()) { unreachable('school', 'Pixel High'); return; }
+    const st = P.stateAt(Date.now());
+    if (!st.started) { $('school').innerHTML = '<p class="p muted">Pixel High opens on ' + esc(fmtDate(Date.parse(st.opens))) + '.</p>'; return; }
+    $('school').innerHTML = '<p class="big">' + num(st.roll) + '</p><p class="p muted">students, ' + st.teachers + ' teachers. ' + (st.inSession ? 'Lessons are on.' : st.term ? 'School is out for the day.' : 'It\u2019s the holidays.') + '</p>';
+  }
+  function uni() {
+    const Lb = U.labour;
+    if (!Lb || !Lb.ready() || !Lb.universityAt) { unreachable('uni', 'Pixel University'); return; }
+    const u = Lb.universityAt(Date.now());
+    if (!u.open) { $('uni').innerHTML = '<p class="big">1 Mar</p><p class="p muted">Pixel University opens on 1 March 2027, with seven faculties. Applications open with the Renewal.</p>'; return; }
+    $('uni').innerHTML = '<p class="big">' + num(u.students) + '</p><p class="p muted">pixels studying. ' + (u.graduates ? num(u.graduates) + ' graduates, ' + num(u.graduatesWorking) + ' of them in work.' : 'The first graduates collect their diplomas on 1 December, graduation day.') + '</p>';
+  }
+
   // ---------------------------------------------------------------- the wire
-  const SOURCES = { glacial: ['Glacial', '#FF5FA2'], weather: ['Weather', '#7FB8E8'], senate: ['Senate', '#E8A33D'], city: ['City', '#C98B6B'], bookmaker: ['Bookmaker', '#F2D024'],
-    census: ['Census', '#3FA66A'], radio: ['Pixel FM', '#9BE22D'], museum: ['Museum', '#B08D4C'] };
+  const SOURCES = { glacial: ['Glacial', '#FF5FA2'], weather: ['Weather', '#7FB8E8'], senate: ['Senate', '#E8A33D'], city: ['City', '#1FE38C'], bookmaker: ['Bookmaker', '#F2D024'],
+    census: ['Census', '#3FA66A'], radio: ['Pixel FM', '#9BE22D'], museum: ['Museum', '#B08D4C'], commerce: ['Exchange', '#20C3AF'], freight: ['Freight', '#46D6FF'], bank: ['Bank', '#C9A227'], society: ['Society', '#FF5FA2'], school: ['Pixel High', '#3D8BFF'] };
   function wire() {
     const now = Date.now(), from = now - DAY, all = [];
-    for (const [k, src] of [['climate', 'weather'], ['senate', 'senate'], ['city', 'city'], ['bookmaker', 'bookmaker'], ['census', 'census'], ['radio', 'radio']]) {
+    for (const [k, src] of [['climate', 'weather'], ['senate', 'senate'], ['city', 'city'], ['bookmaker', 'bookmaker'], ['census', 'census'], ['radio', 'radio'], ['commerce', 'commerce'], ['freight', 'freight'], ['bank', 'bank'], ['society', 'society'], ['school', 'school']]) {
       const s = U[k];
       if (!ok(s)) continue;
       try { for (const e of s.eventsBetween(from, now)) if (e.type !== 'market.open') all.push(Object.assign({}, e, { source: src })); } catch (e) { /* that desk is quiet */ }
@@ -239,10 +287,10 @@
   }
 
   // ---------------------------------------------------------------- open the windows, one at a time, so the page appears at once
-  const steps = [lede, race, city, weather, senate, book, news, census, museum, wire];
+  const steps = [lede, race, city, weather, senate, book, news, census, museum, exchange, bank, society, school, jobs, uni, wire];
   (function next() { const s = steps.shift(); if (!s) return; try { s(); } catch (e) { console.error(e); } setTimeout(next, 0); })();
   setInterval(() => { lede(); try { race(); } catch (e) { /* keep the last frame */ } }, 5000);
   setInterval(() => { try { city(); } catch (e) { /* keep the last view */ } }, 20000);
   setInterval(() => { for (const f of [weather, senate, book]) { try { f(); } catch (e) { /* keep the last view */ } } }, 60000);
-  setInterval(() => { for (const f of [news, census, museum, wire]) { try { f(); } catch (e) { /* keep the last view */ } } }, 10 * 60000);
+  setInterval(() => { for (const f of [news, census, museum, exchange, bank, society, school, jobs, uni, wire]) { try { f(); } catch (e) { /* keep the last view */ } } }, 10 * 60000);
 })();

@@ -65,6 +65,12 @@
       return [bad.length ? 'fail' : 'ok', bad.length ? bad.length + ' malformed, e.g. ' + bad.slice(0, 2).join(', ') : 'All ' + all.length + ' follow the shared format'];
     });
 
+    await check('Events', 'Closures explain themselves', () => {
+      const cl = X.eventsBetween(T - 90 * DAY, T).filter((e) => e.type === 'business.closed');
+      if (!cl.length) return ['ok', 'No closures in the last 90 days'];
+      const none = cl.filter((e) => !e.data.causes || !e.data.causes.length), over = cl.filter((e) => (e.data.causes || []).reduce((a, c) => a + c.share, 0) > 101);
+      return [over.length ? 'fail' : none.length > cl.length * 0.1 ? 'warn' : 'ok', cl.length + ' closures; ' + (cl.length - none.length) + ' with causes' + (over.length ? '; ' + over.length + ' with shares over 100%' : '')];
+    });
     // ---------------------------------------------------------------- 4. citizens: nobody missing
     await check('Citizens', 'Census against Society\u2019s homes', () => {
       const st = S.stateAt(T), pop = K.stats(T).population;
