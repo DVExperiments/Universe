@@ -15,6 +15,7 @@
   'use strict';
   const BASE = 'https://dvexperiments.github.io/';
   const RENEWAL = Date.UTC(2026, 10, 1); // the city's Renewal: from here its clock is UTC+12 (the Weather Bureau has the final word)
+  const ADOPTED = Date.UTC(2026, 11, 1); // the Pixel Calendar: a Pixel Year every month from here (the Weather Bureau keeps it)
   const me = document.currentScript;
   const here = me && me.getAttribute('data-site');
 
@@ -57,7 +58,7 @@
   position: relative; z-index: 60; background: var(--pu-bg); color: var(--pu-ink); font: 500 14px/1.2 var(--body, "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif);
   border-bottom: 1px solid #000; padding-top: env(safe-area-inset-top, 0px); -webkit-font-smoothing: antialiased; }
 .pu-bar * { box-sizing: border-box; }
-.pu-inner { max-width: 1480px; margin: 0 auto; padding: 0 16px; display: flex; align-items: stretch; gap: 4px; min-height: 42px; }
+.pu-inner { max-width: 1840px; margin: 0 auto; padding: 0 16px; display: flex; align-items: stretch; gap: 4px; min-height: 42px; }
 .pu-bar a { color: inherit; text-decoration: none; }
 .pu-brand { display: inline-flex; align-items: center; gap: 9px; padding: 0 12px 0 0; margin-right: 6px; font: 800 15px/1 var(--display, "Bricolage Grotesque", system-ui, sans-serif); letter-spacing: -0.01em; white-space: nowrap; border-right: 1px solid var(--pu-line); }
 .pu-mark { width: 10px; height: 10px; background: var(--pu-ink); box-shadow: 4px 4px 0 -1px #9BE22D; }
@@ -78,11 +79,13 @@
 .pu-drop a[aria-current="page"] { box-shadow: inset 2px 0 0 var(--c); background: var(--pu-hover); }
 .pu-status { display: flex; align-items: center; gap: 14px; margin-left: auto; padding-left: 10px; color: var(--pu-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .pu-status a:hover { color: var(--pu-ink); }
+.pu-clock { text-decoration: none; color: inherit; border-bottom: 1px dotted currentColor; cursor: help; }
+.pu-panel .pu-clock-m { grid-column: 1 / -1; color: var(--pu-muted); margin: 0; }
+.pu-panel .pu-clock-m a { color: inherit; }
 .pu-menu { display: none; margin-left: auto; align-self: center; background: none; border: 1px solid var(--pu-line); color: var(--pu-ink); font: 600 13px var(--body, system-ui); padding: 6px 12px; border-radius: 6px; cursor: pointer; }
 .pu-bar :focus-visible { outline: 2px solid #9BE22D; outline-offset: -2px; }
 .pu-panel { display: none; }
-@media (max-width: 1580px) { .pu-clock { display: none; } }
-@media (max-width: 1300px) { .pu-wallet { display: none; } }
+.pu-bar .pu-squeezed { display: none; }
 @media (max-width: 1180px) {
   .pu-sites, .pu-status { display: none; }
   .pu-menu { display: inline-block; }
@@ -133,12 +136,12 @@
         '<li class="pu-site' + (s.id === here ? ' pu-here' : '') + '" style="--c:' + s.color + '">' +
           '<a class="pu-top" href="' + BASE + s.path + '" aria-haspopup="true"' + (s.id === here ? ' aria-current="true"' : '') + '><i aria-hidden="true"></i>' + esc(s.name) + '</a>' +
           '<ul class="pu-drop"><li class="pu-blurb">' + esc(s.blurb) + '</li>' + itemsHtml(s) + '</ul></li>').join('') + '</ul>' +
-      '<div class="pu-status"><span class="pu-clock" title="City time is UTC"></span><a class="pu-wallet" href="' + BASE + 'Bookmaker/" title="Your play money, kept in this browser"></a></div>' +
+      '<div class="pu-status"><a class="pu-clock" href="' + BASE + 'City/#/time"></a><a class="pu-wallet" href="' + BASE + 'Bookmaker/" title="Your play money, kept in this browser"></a></div>' +
       '<button type="button" class="pu-menu" aria-expanded="false">Menu</button>' +
     '</div>' +
     '<div class="pu-panel">' + SITES.map((s) => '<section style="--c:' + s.color + '"><h2><i aria-hidden="true"></i><a href="' + BASE + s.path + '"' + (s.id === here ? ' aria-current="page"' : '') + '>' + esc(s.name) + '</a></h2>' +
       s.items.map((x, k) => item(s, k)).join('') + '</section>').join('') +
-      '<p class="pu-wallet-m"></p></div>';
+      '<p class="pu-wallet-m"></p><p class="pu-clock-m"><a href="' + BASE + 'City/#/time"></a></p></div>';
 
   const style = document.createElement('style');
   style.textContent = css;
@@ -201,22 +204,44 @@
   bar.addEventListener('click', (e) => { const a = e.target.closest('.pu-drop a, .pu-panel a'); if (a) { sites.forEach((o) => o.classList.remove('pu-open')); toggleMobile(false); } });
 
   // ---------------------------------------------------------------- the clock and the wallet
+  const clockM = bar.querySelector('.pu-clock-m a');
   const clock = bar.querySelector('.pu-clock'), wallet = bar.querySelector('.pu-wallet'), walletM = bar.querySelector('.pu-wallet-m');
   function tick() {
     const d = new Date();
     // city time: UTC until the Renewal, then City Standard Time (UTC+12), as the Weather Bureau keeps it
     const W = window.PixelUniverse && window.PixelUniverse.climate;
     const off = W && W.offsetAt ? W.offsetAt(d.getTime()) : (d.getTime() >= RENEWAL ? 12 * 3600000 : 0);
-    clock.textContent = new Date(d.getTime() + off).toISOString().slice(11, 16) + (off ? ' city time' : ' UTC');
-    clock.title = off ? 'City Standard Time, UTC+12. Races, laws and the newspaper turn over at 00:00 UTC.' : 'City time is UTC';
+    // beside it, the Pixel Calendar: days keep city time, lives keep Pixel Years (one a month, from 1 December 2026)
+    const ms = d.getTime(), P = W && W.pixel;
+    let pd = '';
+    if (ms >= ADOPTED) {
+      let y, doy;
+      if (P) { const p = P.time(ms); y = p.year; doy = p.dayOfYear; }
+      else { const a = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1), b = Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1); y = d.getUTCFullYear() * 12 + d.getUTCMonth() - (2025 * 12 + 11) + 1; doy = Math.floor(((ms - a) * 360) / (b - a)); }
+      pd = 'Year ' + y + ', Day ' + (doy + 1);
+    }
+    clock.textContent = new Date(ms + off).toISOString().slice(11, 16) + (off ? ' city time' : ' UTC') + (pd ? ' \u00b7 ' + pd : '');
+    clock.title = 'About time';
+    if (clockM) clockM.textContent = 'City time ' + new Date(ms + off).toISOString().slice(11, 16) + (pd ? ', ' + pd : '') + '. About time';
     let w = null;
     try { const raw = localStorage.getItem('pixeluniverse.wallet.v1'); w = raw ? JSON.parse(raw) : null; } catch (e) { w = null; }
     const text = w && typeof w.balance === 'number' ? Math.floor(w.balance).toLocaleString('en') + ' W' : 'Get 1,000 W';
     if (wallet.textContent !== text) wallet.textContent = text;
     walletM.textContent = 'Your balance: ' + text;
   }
-  tick();
-  setInterval(tick, 15000);
+  // The status sits beside the sites only while everything fits: the clock goes first, then the wallet, so nothing
+  // ever overlaps the sites (the menu panel shows both on narrow screens).
+  const siteList = bar.querySelector('.pu-sites');
+  function fit() {
+    if (!siteList) return;
+    clock.classList.remove('pu-squeezed'); wallet.classList.remove('pu-squeezed');
+    if (siteList.scrollWidth > siteList.clientWidth + 1) clock.classList.add('pu-squeezed');
+    if (siteList.scrollWidth > siteList.clientWidth + 1) wallet.classList.add('pu-squeezed');
+  }
+  tick(); fit();
+  window.addEventListener('resize', fit);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  setInterval(() => { tick(); fit(); }, 15000);
   window.addEventListener('storage', (e) => { if (e.key === 'pixeluniverse.wallet.v1') tick(); });
   // the site's own routes change the hash: keep the highlighted area in step
   window.addEventListener('hashchange', () => {

@@ -27,7 +27,9 @@
   // ---------------------------------------------------------------- the day
   function lede() {
     const now = Date.now(), n = Math.floor((now - Date.UTC(2025, 11, 3)) / DAY) + 1;
-    $('lede').textContent = 'Day ' + num(n) + ' of the universe. ' + fDate.format(now) + ', ' + hm(now) + ' city time. Everything below is happening now, slowly.';
+    const W = U.climate, off = W && W.offsetAt ? W.offsetAt(now) : (now >= Date.UTC(2026, 10, 1) ? 12 * H : 0);
+    const P = W && W.pixel, py = P && now >= P.adopted ? P.time(now) : null;
+    $('lede').textContent = 'Day ' + num(n) + ' of the universe. ' + fDate.format(now + off) + ', ' + hm(now + off) + ' city time' + (py ? ', and Day ' + (py.dayOfYear + 1) + ' of Pixel Year ' + py.year : '') + '. Everything below is happening now, slowly.';
   }
 
   // ---------------------------------------------------------------- the city, drawn from its own map
