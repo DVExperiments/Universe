@@ -35,6 +35,25 @@
   const iso = (ms) => new Date(ms).toISOString().replace('.000Z', 'Z');
   const dayOf = (ms) => ms - (((ms % DAY) + DAY) % DAY);
 
+  // ---------------------------------------------------------------- the Pixel Calendar (for display)
+  // One Pixel Year per calendar month, from 00:00 UTC on the 1st; December 2025 is Year 1; 360 pixel days a year.
+  // The Weather Bureau's universe.js is the source of truth (PixelUniverse.climate.pixel), and simulations read it there;
+  // this copy, identical, lets reader pages show pixel dates without loading the climate.
+  const MONTH0 = 2025 * 12 + 11;
+  function pixelTime(t) {
+    const C = root.PixelUniverse && root.PixelUniverse.climate;
+    if (C && C.pixel) return C.pixel.time(t);
+    const d = new Date(t), y = d.getUTCFullYear(), m = d.getUTCMonth();
+    const a = Date.UTC(y, m, 1), b = Date.UTC(y, m + 1, 1);
+    const dayOfYear = Math.floor(((t - a) * 360) / (b - a));
+    return { year: y * 12 + m - MONTH0 + 1, month: Math.floor(dayOfYear / 30) + 1, day: (dayOfYear % 30) + 1, dayOfYear, yearStart: a, yearEnd: b };
+  }
+  const PIXEL_MONTHS = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth', 'Eleventh', 'Twelfth'];
+  /** '13-04-12' (year, month, day), as events write it. */
+  const pixelDate = (t) => { const p = pixelTime(t); return p.year + '-' + pad(p.month) + '-' + pad(p.day); };
+  /** 'Day 12 of the Fourth Month, Year 13', for pages. */
+  const pixelLong = (t) => { const p = pixelTime(t); return 'Day ' + p.day + ' of the ' + PIXEL_MONTHS[p.month - 1] + ' Month, Year ' + p.year; };
+
   // ---------------------------------------------------------------- the Senate's laws, applied to a page (cosmetic)
   const FONT_AXES = {
     'Space Grotesk': 'wght@500;700', 'Fraunces': 'opsz,wght@9..144,500;9..144,700;9..144,800', 'DM Serif Display': '',
@@ -75,5 +94,5 @@
   }
 
   root.PixelUniverse = root.PixelUniverse || {};
-  root.PixelUniverse.shared = { version: '1.0.0', rng, hash, seed, EPOCH, DAY, ymd, iso, dayOf, applyLaws, loadFont };
+  root.PixelUniverse.shared = { version: '1.1.0', rng, hash, seed, EPOCH, DAY, ymd, iso, dayOf, pixelTime, pixelDate, pixelLong, PIXEL_ADOPTED: Date.UTC(2026, 11, 1), applyLaws, loadFont };
 })(typeof window !== 'undefined' ? window : globalThis);

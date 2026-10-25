@@ -57,6 +57,7 @@ The universe epoch is Glacial's existing `G.EPOCH` (in `js/league.js`), so every
 
 - **All simulation uses UTC.** Local time is for display only.
 - **A day starts at 00:00 UTC**, matching the Daily Crawl start.
+- **City time is for display.** Since the Renewal (1 November 2026) the city's clock is City Standard Time, UTC+12 all year, read from the Weather Bureau's `offsetAt`. Simulation still steps on UTC days.
 - **Time is passed in, never read inside simulation code.** Functions take a timestamp argument; only the page's display loop calls `Date.now()`. This keeps simulations testable and lets any site ask "what was true at time T".
 - **Coarse past, fine present.** Systems may simulate history in daily steps and only compute minute-level detail for the current day, to keep load times short as history grows.
 - Sites that start later than the epoch (e.g. the Senate) declare their own start date. Before it, they return empty state and no events.
@@ -87,7 +88,7 @@ Days run on UTC, but lives run on the **Pixel calendar**: one Pixel Year passes 
 
 - **A Pixel Year has 360 pixel days**: twelve pixel months of 30 days. Calendar months run 28 to 31 days, so a pixel day lasts from about 1 hour 52 minutes (February) to about 2 hours 4 minutes (31-day months).
 - **Years count from the epoch.** December 2025 is Year 1, so Glacial's first anniversary on 1 December 2026 opens Year 13. Pixel dates are written year, month, day, e.g. `13-04-12`.
-- **One helper, integer maths only.** `G.pixelTime(t)` in `js/shared.js` returns `{ year, month, day, dayOfYear }`. The products stay far below 2^53, so every browser gets the same answer:
+- **One source of truth, integer maths only.** The Weather Bureau's `universe.js` keeps the calendar as `PixelUniverse.climate.pixel`, beside the city clock, and every simulation reads it there; `Universe/shared.js` has an identical copy (`pixelTime`, `pixelDate`, `pixelLong`) for display pages. `pixel.time(t)` returns `{ year, month, day, dayOfYear, yearStart, yearEnd }`, and the products stay far below 2^53, so every browser gets the same answer:
 
 ```js
 const d = new Date(t);
@@ -100,12 +101,13 @@ const month = Math.floor(dayOfYear / 30) + 1, day = (dayOfYear % 30) + 1;
 
 | Clock | Used for |
 | --- | --- |
-| Real UTC days | Glacial races, the Daily Crawl and Grand Prix; betting, odds and the visitor bankroll; Senate sittings and votes; newspaper editions; the one-day lag rule; event `time` |
-| Pixel calendar | Ages, births and deaths; schooling and university terms; careers and staff turnover; loan and mortgage terms; wages, rents and interest quoted per year; terms of office and election cycles; seasons (from the Climate Reform); ecosystem generations |
+| Real UTC days | Glacial races, the Daily Crawl and Grand Prix; betting, odds and the visitor bankroll; Senate sittings, votes, elections and budgets; newspaper editions; weather systems, the day and night, and the forecast; the economy (prices, wages, rents, the Bank's rate, businesses opening and closing, the Job Centre's monthly report); the one-day lag rule; event `time` |
+| Pixel calendar | Seasons (from the Climate Reform); ages, births and deaths; household tenancies; careers, job spells and quitting; Pixel High's and the University's years; student loan and mortgage terms; ecosystem generations |
 
+- **The life clock.** Lengths of a life are measured on `pixel.toLife(t)`: a clock that runs one 365.25-day year per calendar month from the adoption and is the ordinary clock before it. A site adds a duration with `pixel.add(t, span)` and measures an age with `pixel.years(birth, t)` (the census exposes the same as `ageAt` and `lifeClock`). History before the adoption is unchanged, and every moment handed between sites stays a real moment.
 - **The world loop still steps one real day at a time.** Each step covers about twelve pixel days; systems that count in pixel time advance by however many pixel days the step actually contains (from `G.pixelTime`), never by a fixed twelve.
-- **Durations are quoted in Pixel Years.** A three-Year Senate term means an election every three months; a 25-Year mortgage runs just over two real years; the fortnight's lag on election swings is about half a Pixel Year of opinion slowly settling.
-- **Proposed lifespans:** school from 5 to 18, working life from 18 to 65, life expectancy around 70 Pixel Years (about six real years). See Open questions.
+- **Lives are quoted in Pixel Years.** A 25-Year mortgage runs just over two real years, a three-Year degree three real months. The Senate keeps its real calendar: elections twice a year are, in Pixel terms, six-Year terms, and the fortnight's lag on election swings is about half a Pixel Year of opinion slowly settling.
+- **Lifespans:** the census's existing life tables, now counted in Pixel Years: Pixel High for Years 9 to 13, working life from 18, retirement at 67 (from 60 early), and a median age at going dark of about 80 Pixel Years (under seven real years). About 600 pixels are lit and 550 go dark each real month. See Open questions.
 - **The sixteen Glacial pixels stand outside the Pixel calendar.** They never age, which the press treats as a matter of quiet civic pride.
 - **Display:** pages show pixel dates for lives and institutions, and real UTC or local times for races, betting and sittings. The newspaper dates each edition both ways.
 
@@ -125,7 +127,7 @@ Glacial already defines the shared functions in `js/sim.js`: `G.rng(seed)` (a mu
 
 ### Start dates
 
-The Pixel calendar is defined back to the epoch, so any system can count in it from its own start date. The Climate Reform (seasons on the Pixel Year) takes effect 1 December 2026. Each system that changes what happens declares its start date, and must be live before it: working lives 30 November 2026; freight and Society 1 December 2026; the Bank 1 February 2027; migration, glitches and the University 1 March 2027; Society-driven elections from May 2027; rents 1 June 2027; wellbeing, choices and staff turnover 1 September 2027. Changes that only explain or display (causes, the map, the health dashboard) can go live at any time.
+The Pixel calendar is defined back to the epoch, so any system can count in it from its own start date. The Climate Reform (seasons on the Pixel Year) and the life clock take effect at 00:00 UTC on 1 December 2026. Each system that changes what happens declares its start date, and must be live before it: working lives 30 November 2026; freight and Society 1 December 2026; the Bank 1 February 2027; University applications 1 February 2027; migration, glitches and the University 1 March 2027; Society-driven elections from May 2027; rents 1 June 2027; wellbeing, choices and staff turnover 1 September 2027. Changes that only explain or display (causes, the map, the health dashboard) can go live at any time.
 
 ## Event format
 
@@ -240,7 +242,7 @@ Visitors stay on real time. In-universe, the 1 January reset is the **Great Sett
 
 Seasons follow the Southern Hemisphere on the Pixel Year: summer peaks at New Year (Grand Prix day) and winter in the seventh pixel month, around the middle of each calendar month, so each season lasts about a real week. Before the Climate Reform on 1 December 2026, seasons followed the real calendar (summer peaking in January, winter in July); that history is frozen as the Climate's first era. Weather comes from two layers, and neither ever touches race outcomes.
 
-- **Climate (root).** A pure function of time giving season, temperature, rain and wind fronts that take several pixel days (some hours) to arrive. Glacial's existing day/night effect stays as it is and never reads weather.
+- **Climate (root).** A pure function of time giving season, temperature, rain and wind fronts that take days to arrive. Only the seasons follow the Pixel Year; weather systems, the day and night and the forecast keep real time, so the weather never changes faster than a watcher would notice. Glacial's existing day/night effect stays as it is and never reads weather.
 - **Ecosystem (world loop).** Modifies the climate locally based on what the city did yesterday. Pollution from power plants and traffic builds smog, warms the city slightly, and shifts what lives there. Parks, clean-energy laws and quiet days let it recover.
 - **Living things.** Pixel birds, insects and plants have populations that rise and fall with season and pollution, tracked like any other statistic. Migrations, blooms and die-offs make news.
 - **Feedback loop.** Smog raises city health complaints, the Senate debates clean-air bills, laws change the city's power mix, and the ecosystem slowly responds. Each step lags a real day, so a full cycle plays out over real weeks, several Pixel Years.
@@ -309,4 +311,4 @@ Open questions:
 - [x] Senate first sitting: proposed for 3 December 2026, Glacial's first anniversary, at 19:00 UTC (8am NZ).
 - [ ] Bankroll: hoarding allowed, full wallet reset at each Great Settlement on 1 January (decided; see Visitor bankroll).
 - [x] Seasons: Southern Hemisphere on the Pixel Year from the Climate Reform (1 December 2026), with a city-influenced ecosystem (see Weather, climate and ecosystem).
-- [ ] Pixel lifespans: proposed life expectancy of 70 Pixel Years (about six real years). Shorter lives (25 to 30 Years) would let a whole life be followed within two to three real years.
+- [ ] Pixel lifespans: the census's life tables give a median of about 80 Pixel Years (under seven real years). Shorter lives (25 to 30 Years) would let a whole life be followed within two to three real years, but would need new life tables before 1 December 2026.

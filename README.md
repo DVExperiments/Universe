@@ -62,6 +62,7 @@ How it behaves:
 - **`rng` and `hash`:** identical to Glacial's `G.rng` and `G.hash`. Never change them.
 - **`seed(site, purpose)`:** a seeded stream for one site and purpose.
 - **Dates:** `ymd`, `iso`, `dayOf`, plus `EPOCH` and `DAY`.
+- **The Pixel Calendar, for display:** `pixelTime(t)`, `pixelDate(t)` (`'13-04-12'`) and `pixelLong(t)` (`'Day 12 of the Fourth Month, Year 13'`), plus `PIXEL_ADOPTED`. They use the Weather Bureau's `climate.pixel` when it is loaded; simulations should always read it there.
 - **`applyLaws(t)`:** restyles a page with the colours and typefaces that are Senate law at time `t`, following the reader's light or dark setting.
 
 Existing sites keep identical copies, so nothing changes for them. New sites should use these, and older ones can switch whenever they're next edited.
