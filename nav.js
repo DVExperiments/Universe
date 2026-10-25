@@ -231,7 +231,7 @@
   const clock = bar.querySelector('.pu-clock'), wallet = bar.querySelector('.pu-wallet'), walletM = bar.querySelector('.pu-wallet-m');
   function tick() {
     const d = new Date();
-    // city time: UTC until the Renewal, then City Standard Time (UTC+12), as the Weather Bureau keeps it
+    // Pixel City Time (PCT): UTC until the Renewal, then UTC+12, as the Weather Bureau keeps it
     const W = window.PixelUniverse && window.PixelUniverse.climate;
     const off = W && W.offsetAt ? W.offsetAt(d.getTime()) : (d.getTime() >= RENEWAL ? 12 * 3600000 : 0);
     // beside it, the Pixel Calendar: days keep city time, lives keep Pixel Years (one a month, from 1 December 2026)
@@ -243,9 +243,9 @@
       else { const a = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1), b = Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1); y = d.getUTCFullYear() * 12 + d.getUTCMonth() - (2025 * 12 + 11) + 1; doy = Math.floor(((ms - a) * 360) / (b - a)); }
       pd = 'Year ' + y + ', Day ' + (doy + 1);
     }
-    clock.textContent = new Date(ms + off).toISOString().slice(11, 16) + (off ? ' city time' : ' UTC') + (pd ? ' \u00b7 ' + pd : '');
+    clock.textContent = new Date(ms + off).toISOString().slice(11, 16) + ' PCT' + (pd ? ' \u00b7 ' + pd : ''); // Pixel City Time
     clock.title = 'About time';
-    if (clockM) clockM.textContent = new Date(ms + off).toISOString().slice(11, 16) + (off ? ' city time' : ' UTC') + (pd ? ' \u00b7 ' + pd : '');
+    if (clockM) clockM.textContent = new Date(ms + off).toISOString().slice(11, 16) + ' PCT' + (pd ? ' \u00b7 ' + pd : '');
     let w = null;
     try { const raw = localStorage.getItem('pixeluniverse.wallet.v1'); w = raw ? JSON.parse(raw) : null; } catch (e) { w = null; }
     const text = w && typeof w.balance === 'number' ? Math.floor(w.balance).toLocaleString('en') + ' W' : 'Get 1,000 W';
