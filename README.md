@@ -83,3 +83,5 @@ Every site is served from your local copies, and every address pointing at `dvex
 ## World health (`health.html`)
 
 An internal dashboard that loads every simulation in the chain and checks that the universe holds together. Read-only; add `?at=` to check any moment. It checks: every site loaded and ready, with versions; fresh data (each run has reached yesterday); events unique across every site and in the shared format; citizens (the census population against Society's homes, and working lives adding up); impossible balances (business staff and prices, the Bank's book, freight stocks); cross-references (Exchange premises and employers in the census register; building links on the map, live site only); consistency between sites (blackouts, Senate law keys); and determinism (the same moment computed twice gives the same answer). Linked from the Pixel Universe menu.
+
+It also checks that every district's basic needs are in range and that a sampled resident's wellbeing reads cleanly.

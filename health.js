@@ -80,6 +80,21 @@
       return [rate >= 0 && rate < 40 ? 'ok' : 'fail', lm.employed.toLocaleString('en') + ' employed, ' + lm.looking.toLocaleString('en') + ' looking (' + rate + '%), ' + (lm.studying || 0).toLocaleString('en') + ' studying'];
     });
 
+    await check('Citizens', 'Basic needs within range', () => {
+      const st = S.stateAt(T);
+      if (!st.districts || !st.districts[0].needs) return ['ok', 'Needs are not tracked yet'];
+      const bad = st.districts.filter((d) => Object.values(d.needs).some((v) => !(v >= 0 && v <= 100)));
+      let lo = 100; for (const d of st.districts) if (d.needs.wellbeing < lo) lo = d.needs.wellbeing;
+      return [bad.length ? 'fail' : 'ok', bad.length ? 'Out of range in ' + bad.map((d) => d.name).join(', ') : 'All sixteen districts in range; lowest wellbeing ' + lo.toFixed(0)];
+    });
+    await check('Citizens', 'A resident\u2019s wellbeing reads cleanly', () => {
+      if (!L.wellbeingOf) return ['warn', 'Not available in this census version'];
+      const p = (K.residentsOf(0, T, 10, 1) || [])[0]; if (!p) return ['warn', 'No resident to sample'];
+      const w = L.wellbeingOf(p.id || p, T);
+      if (!w) return ['ok', 'Not tracked yet'];
+      const ok = Object.values(w).every((v) => v >= 0 && v <= 1);
+      return [ok ? 'ok' : 'fail', 'Sampled ' + (p.id || p) + ': wellbeing ' + Math.round(w.wellbeing * 100)];
+    });
     // ---------------------------------------------------------------- 5. balances: nothing impossible
     await check('Balances', 'Businesses', () => {
       const firms = X.firmsAt(T), bad = firms.filter((f) => f.open && (f.staff < 0 || f.staff > f.capacity || !(f.price > 0)));
