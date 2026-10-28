@@ -24,7 +24,7 @@
   // history is slow, and everything the watchers need from them is echoed in these
   const SOURCES = ['climate', 'city', 'senate', 'commerce', 'freight', 'bank', 'society', 'shares', 'bookmaker'];
   const SITE = { climate: 'Weather Bureau', weather: 'Weather Bureau', city: 'Pixel City', senate: 'Senate', commerce: 'Exchange', freight: 'Freight', bank: 'Bank', society: 'Society', shares: 'Share market', bookmaker: 'Bookmaker' };
-  const SITE_URL = { climate: 'Weather/', weather: 'Weather/', city: 'City/', senate: 'Senate/', commerce: 'Exchange/', freight: 'Exchange/#/freight', bank: 'Bank/', society: 'City/society.html', shares: 'Exchange/', bookmaker: 'Bookmaker/' };
+  const SITE_URL = { climate: 'Weather/', weather: 'Weather/', city: 'City/', senate: 'Senate/', commerce: 'Exchange/', freight: 'Exchange/#/freight', bank: 'Bank/', society: 'City/society.html', shares: 'Exchange/#/shares', bookmaker: 'Bookmaker/' };
 
   const U = () => root.PixelUniverse || {};
   const pad = (n) => (n < 10 ? '0' : '') + n;
