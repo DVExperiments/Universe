@@ -17,14 +17,14 @@
 (function (root) {
   'use strict';
 
-  const VERSION = '1.0.0';
+  const VERSION = '1.1.0';
   const H = 3600000, DAY = 86400000;
   const EPOCH = Date.UTC(2025, 11, 3);
   // the sites the watchers read; the census, the Job Centre and Pixel High are left out because replaying their whole
   // history is slow, and everything the watchers need from them is echoed in these
-  const SOURCES = ['climate', 'city', 'senate', 'commerce', 'freight', 'bank', 'society', 'bookmaker'];
-  const SITE = { climate: 'Weather Bureau', weather: 'Weather Bureau', city: 'Pixel City', senate: 'Senate', commerce: 'Exchange', freight: 'Freight', bank: 'Bank', society: 'Society', bookmaker: 'Bookmaker' };
-  const SITE_URL = { climate: 'Weather/', weather: 'Weather/', city: 'City/', senate: 'Senate/', commerce: 'Exchange/', freight: 'Exchange/#/freight', bank: 'Bank/', society: 'City/society.html', bookmaker: 'Bookmaker/' };
+  const SOURCES = ['climate', 'city', 'senate', 'commerce', 'freight', 'bank', 'society', 'shares', 'bookmaker'];
+  const SITE = { climate: 'Weather Bureau', weather: 'Weather Bureau', city: 'Pixel City', senate: 'Senate', commerce: 'Exchange', freight: 'Freight', bank: 'Bank', society: 'Society', shares: 'Share market', bookmaker: 'Bookmaker' };
+  const SITE_URL = { climate: 'Weather/', weather: 'Weather/', city: 'City/', senate: 'Senate/', commerce: 'Exchange/', freight: 'Exchange/#/freight', bank: 'Bank/', society: 'City/society.html', shares: 'Exchange/', bookmaker: 'Bookmaker/' };
 
   const U = () => root.PixelUniverse || {};
   const pad = (n) => (n < 10 ? '0' : '') + n;
@@ -273,6 +273,139 @@
         return R('market.settled').filter((e) => e.data.sp >= 9).map((e) => ({ anchor: e, time: e.ms, links: [e],
           title: 'An outsider won at ' + e.data.sp.toFixed(2),
           text: e.headline + '. The city\u2019s bettors had made it an outsider; the race does not read the odds.' }));
+      }
+    },
+    {
+      key: 'leap', name: 'A craze leapt across town', connection: 'one system',
+      looks: 'A craze carried from one district to a district that is not its neighbour, by a community that happens to know someone across town.',
+      via: 'Society\u2019s communities each know a handful of others, mostly nearby; now and then one knows a community on the far side of the city, and a craze can travel along that one tie.',
+      example: 'A choir in a western district takes up a shade of orange. A fortnight later the craze appears in an eastern district, carried there by a hobby club that knows the choir.',
+      find(R, t) {
+        const out = [];
+        for (const e of R('fad.spread').filter((x) => x.data.leap)) {
+          const start = R('fad.start').filter((x) => x.data.fad === e.data.fad)[0];
+          const big = R('fad.everywhere').filter((x) => x.data.fad === e.data.fad && x.ms > e.ms && x.ms <= t)[0];
+          const what = e.data.category === 'colour' ? 'a craze for ' + e.data.item : e.data.category === 'song' ? 'a song from Pixel FM' : 'a craze for ' + e.data.item.toLowerCase() + 's';
+          out.push({ anchor: e, time: big ? big.ms : e.ms, links: (start ? [start] : []).concat([e], big ? [big] : []),
+            title: 'A craze leapt from ' + e.data.from + ' to ' + e.data.district,
+            text: (start ? 'The ' + start.data.community + ' started ' + what + ' on ' + longDate(start.ms) + '. ' : '') + 'On ' + longDate(e.ms) + ' the ' + e.data.carrier + ' carried it to the ' + e.data.to + ', in a district nowhere near their own' +
+              (big ? ', and by ' + longDate(big.ms) + ' ' + big.data.share + '% of the city had taken it up.' : '.') + ' No community was told to pass it on; one of them simply knew someone across town.' });
+        }
+        return out;
+      }
+    },
+    {
+      key: 'holdout', name: 'A district held out', connection: 'one system',
+      looks: 'A craze that the whole city took up, except for one or more districts that never did.',
+      via: 'Each community takes a craze up only when enough of the communities it knows have; a district whose communities mostly know each other can stay untouched while the city around it changes.',
+      example: 'A song is on every set in the city for a month, except in one district, where almost nobody learns it.',
+      find(R, t) {
+        const out = [], by = {};
+        for (const e of R('fad.holdout')) (by[e.data.fad] = by[e.data.fad] || []).push(e);
+        for (const id in by) {
+          const holds = by[id].filter((e) => e.ms <= t); if (!holds.length) continue;
+          const big = R('fad.everywhere').filter((x) => x.data.fad === id)[0];
+          const names = holds.map((e) => e.data.district);
+          out.push({ anchor: holds[0], time: holds[holds.length - 1].ms, links: (big ? [big] : []).concat(holds.slice(0, 4)),
+            title: list(names) + ' never took to it',
+            text: (big ? (big.data.category === 'colour' ? big.data.item : big.data.category === 'song' ? 'A song from Pixel FM' : 'The craze for ' + big.data.item.toLowerCase() + 's') + ' had reached ' + big.data.share + '% of Pixel City by ' + longDate(big.ms) + '. ' : '') + 'By the time it was over, ' + list(names) + (names.length === 1 ? ' had' : ' had each') + ' barely noticed. Nobody organised the resistance.' });
+        }
+        return out;
+      }
+    },
+    {
+      key: 'laststand', name: 'The last of their kind', connection: 'one system',
+      looks: 'A party reduced to a single community in a district where several once held to it, after one community after another changed sides.',
+      via: 'Each community listens only to the communities it knows whose views are close to its own; once enough of them turn, the ones left behind have fewer and fewer to talk to.',
+      example: 'Four communities in one district lean Verdant. Over a winter three turn to Brightness, one at a time, and the fourth is left on its own.',
+      find(R, t) {
+        const out = [];
+        for (const e of R('society.laststand')) {
+          if (e.ms > t) continue;
+          const turned = R('society.turns').filter((x) => x.ms < e.ms && x.ms >= e.ms - 240 * DAY && x.data.from === e.data.party && / of (.+)$/.exec(x.data.community) && / of (.+)$/.exec(x.data.community)[1] === e.data.district);
+          if (!turned.length) continue;
+          out.push({ anchor: e, time: e.ms, links: turned.slice(-4).concat([e]),
+            title: 'The last ' + ({ B: 'Brightness', V: 'Verdant', L: 'Legacy Mode' }[e.data.party] || '') + ' community in ' + e.data.district,
+            text: plural(turned.length, 'community', 'communities').replace(/^./, (c) => c.toUpperCase()) + ' in ' + e.data.district + ' turned away from ' + ({ B: 'Brightness', V: 'Verdant', L: 'Legacy Mode' }[e.data.party] || 'their party') + ' before ' + longDate(e.ms) + ', when the ' + e.data.community.replace(/ of .+$/, '') + ' found themselves the only ones left. No one decided the district should change; each community followed the ones it listens to.' });
+        }
+        return out;
+      }
+    },
+    {
+      key: 'bubble', name: 'A bubble, a burst, and \u201cwe told you so\u201d', connection: 'one system',
+      looks: 'A listed business whose shares climbed far above what it is worth, then burst, then settled back where value investors said they belonged.',
+      via: 'Momentum traders buy what is rising and value traders buy what is cheap; nobody tells them when to stop.',
+      example: 'Shares in a render plant climb to twice what the plant is worth over a month, lose a third in a fortnight, and settle back at its worth by the end of the season.',
+      find(R, t) {
+        const out = [];
+        for (const c of R('shares.crash').filter((x) => x.data.burst && x.ms <= t)) {
+          const b = R('shares.bubble').filter((x) => x.id === c.data.bubble)[0];
+          const v = R('shares.vindicated').filter((x) => x.data.crash === c.id && x.ms <= t)[0];
+          out.push({ anchor: c, time: v ? v.ms : c.ms, links: (b ? [b] : []).concat([c], v ? [v] : []),
+            title: 'The bubble in ' + c.data.firm + ' shares',
+            text: (b ? 'On ' + longDate(b.ms) + ' ' + c.data.firm + ' shares were ' + b.data.premium + '% above what the business was worth, with ' + b.data.momentum + '% of its investors trading on momentum. ' : '') +
+              'The bubble burst on ' + longDate(c.ms) + ', ' + c.data.fall + '% gone in ' + c.data.days + ' trading days' + (v ? ', and by ' + longDate(v.ms) + ' the shares were back to what the business was worth.' : '.') + ' The business itself never changed.' });
+        }
+        return out;
+      }
+    },
+    {
+      key: 'caught', name: 'Momentum caught on, and a bubble followed', connection: 'linked',
+      looks: 'A bubble in a business\u2019s shares, in a district where momentum trading had caught on among the communities and never cooled.',
+      via: 'The share market\u2019s investors are Society\u2019s communities, who pick up their way of trading from the communities they know, and each business\u2019s shares are held mostly by its own district.',
+      example: 'Momentum trading catches on among the hobby clubs of one district in spring. It never wears off, and the next year shares in that district\u2019s biggest warehouse climb to half again what it is worth.',
+      find(R, t) {
+        const out = [];
+        for (const b of R('shares.bubble').filter((x) => x.ms <= t)) {
+          const c = R('shares.catches').filter((x) => x.data.district === b.data.district && x.ms < b.ms).slice(-1)[0];
+          if (!c || R('shares.cools').some((x) => x.data.district === b.data.district && x.ms > c.ms && x.ms < b.ms)) continue; // momentum must still have held
+          if (R('shares.bubble').some((x) => x.data.district === b.data.district && x.ms > c.ms && x.ms < b.ms)) continue; // the first bubble of the outbreak tells the story
+          const burst = R('shares.crash').filter((x) => x.data.bubble === b.id && x.ms <= t)[0];
+          const months = Math.floor((b.ms - c.ms) / (30 * DAY));
+          out.push({ anchor: b, time: burst ? burst.ms : b.ms, links: [c, b].concat(burst ? [burst] : []),
+            title: 'Momentum in ' + b.data.district + ' lifted ' + b.data.firm,
+            text: 'Momentum trading caught on in ' + c.data.district + ' on ' + longDate(c.ms) + ', led by the ' + c.data.community + (c.data.from ? ', who had it from the ' + c.data.from : '') + ', and never wore off. ' +
+              (months >= 2 ? word(months).charAt(0).toUpperCase() + word(months).slice(1) + ' months later' : 'Weeks later') + ', ' + b.data.firm + ', a ' + b.data.district + ' business, traded at ' + b.data.premium + '% above its worth' +
+              (burst ? ', until the bubble burst on ' + longDate(burst.ms) + '.' : '.') + ' The communities only ever changed how they traded; the bubble was what that did to their own district\u2019s shares.' });
+        }
+        return out;
+      }
+    },
+    {
+      key: 'momentumcity', name: 'The whole city turned to momentum', connection: 'linked',
+      looks: 'Momentum trading becoming the majority on the Pixel Exchange after catching on district by district.',
+      via: 'Each community\u2019s investors drift towards what the communities they know are doing, so a way of trading that pays in one district spreads along Society\u2019s network to the next.',
+      example: 'Momentum trading catches on in one district in March, two more in May, and by August most of the city\u2019s investors are chasing trends.',
+      find(R, t) {
+        const out = [];
+        for (const m of R('shares.momentum').filter((x) => x.ms <= t)) {
+          const prev = R('shares.momentum').filter((x) => x.ms < m.ms).slice(-1)[0], back = R('shares.value').filter((x) => x.ms < m.ms).slice(-1)[0];
+          const since = back ? back.ms : prev ? prev.ms : 0;
+          const caught = R('shares.catches').filter((x) => x.ms > since && x.ms <= m.ms);
+          if (caught.length < 2) continue;
+          out.push({ anchor: m, time: m.ms, links: caught.slice(0, 4).concat([m]),
+            title: 'Momentum took the Pixel Exchange, one district at a time',
+            text: 'Momentum trading caught on in ' + list(caught.map((x) => x.data.district).filter((d, i, a) => a.indexOf(d) === i).slice(0, 5)) + (caught.map((x) => x.data.district).filter((d, i, a) => a.indexOf(d) === i).length > 5 ? ' and elsewhere' : '') + ' before ' + longDate(m.ms) + ', when ' + m.data.share + '% of the city\u2019s investors were trading on it. No one persuaded the city; each community followed the ones it knows.' });
+        }
+        return out;
+      }
+    },
+    {
+      key: 'sawit', name: 'The market saw it coming', connection: 'linked',
+      looks: 'A listed business whose shares fell hard in the months before it closed, before anyone at the business knew it would.',
+      via: 'Value traders re-price every listed business from its monthly results at the Exchange; the business closes only when its cash or patience runs out.',
+      example: 'A warehouse\u2019s shares lose a third of their price in March. It keeps trading through April and closes in May, and is struck off the Exchange.',
+      find(R, t) {
+        const out = [];
+        for (const d of R('shares.delisted').filter((x) => x.ms <= t)) {
+          const fall = R('shares.crash').filter((x) => x.data.premises === d.data.premises && x.ms < d.ms && x.ms >= d.ms - 120 * DAY)[0];
+          const shut = R('business.closed').filter((x) => x.id === d.data.closure)[0];
+          if (!fall || !shut) continue;
+          out.push({ anchor: d, time: d.ms, links: [fall, shut, d],
+            title: 'The market saw ' + d.data.firm + '\u2019s closure coming',
+            text: d.data.firm + ' shares fell ' + fall.data.fall + '% by ' + longDate(fall.ms) + '. The business closed on ' + longDate(shut.ms) + (shut.data.reason ? ' (' + shut.data.reason + ')' : '') + ', and was struck off the Pixel Exchange. The market only ever read its results.' });
+        }
+        return out;
       }
     },
     {

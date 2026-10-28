@@ -27,7 +27,7 @@
     catch (e) { add(group, name, 'fail', 'Threw: ' + (e && e.message ? e.message : e), Math.round(performance.now() - t0)); }
     await new Promise((r) => setTimeout(r, 0)); // let the page paint between checks
   }
-  const SITES = [['climate', 'Weather Bureau'], ['senate', 'Senate'], ['city', 'Pixel City'], ['census', 'Census Office'], ['labour', 'Working lives'], ['commerce', 'Exchange'], ['freight', 'Freight'], ['bank', 'Bank'], ['society', 'Society'], ['radio', 'Pixel FM'], ['paper', 'Daily Pixel']];
+  const SITES = [['climate', 'Weather Bureau'], ['senate', 'Senate'], ['city', 'Pixel City'], ['census', 'Census Office'], ['labour', 'Working lives'], ['commerce', 'Exchange'], ['freight', 'Freight'], ['bank', 'Bank'], ['society', 'Society'], ['shares', 'Share market'], ['radio', 'Pixel FM'], ['paper', 'Daily Pixel']];
   const ymd = (ms) => new Date(ms).toISOString().slice(0, 10);
 
   async function run() {
@@ -52,7 +52,7 @@
     // ---------------------------------------------------------------- 3. events: unique, well-formed
     await check('Events', 'Unique ids across every site, last 30 days', () => {
       const all = [], from = T - 30 * DAY;
-      for (const [k, s] of [['city', C], ['senate', Se], ['commerce', X], ['freight', F], ['bank', B], ['society', S]]) if (s && s.eventsBetween) for (const e of s.eventsBetween(from, T)) all.push(e);
+      for (const [k, s] of [['city', C], ['senate', Se], ['commerce', X], ['freight', F], ['bank', B], ['society', S], ['shares', U.shares]]) if (s && s.eventsBetween) for (const e of s.eventsBetween(from, T)) all.push(e);
       if (L && L.universityEventsBetween) for (const e of L.universityEventsBetween(from, T)) all.push(e);
       const seen = {}, dup = [];
       for (const e of all) { if (seen[e.id]) dup.push(e.id); seen[e.id] = 1; }

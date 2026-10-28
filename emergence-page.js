@@ -15,7 +15,7 @@
   const fTime = new Intl.DateTimeFormat('en-NZ', { timeZone: 'UTC', hour: 'numeric', minute: '2-digit' });
   const date = (t) => fDate.format(t + off(t));
   const KIND = { linked: ['Linked', 'linked'], 'one system': ['One system', 'one'], coincidence: ['Coincidence', 'coincidence'] };
-  const COLOR = { climate: '#7FB8E8', city: '#1FE38C', senate: '#E8A33D', commerce: '#20C3AF', freight: '#46D6FF', bank: '#C9A227', society: '#FF5FA2', bookmaker: '#F2D024' };
+  const COLOR = { climate: '#7FB8E8', city: '#1FE38C', senate: '#E8A33D', commerce: '#20C3AF', freight: '#46D6FF', bank: '#C9A227', society: '#FF5FA2', shares: '#E04FFF', bookmaker: '#F2D024' };
   const BASE = 'https://dvexperiments.github.io/';
   let filter = '', entries = [], loaded = false;
 
