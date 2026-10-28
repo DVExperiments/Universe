@@ -1,6 +1,6 @@
 # Pixel Universe: Shared Conventions
 
-Oct 25, 2026 · @Dylan · revised for City v3, the Exchange, Society, the Bank, the University and the Pixel calendar
+Oct 29, 2026 · @Dylan · revised for City v3, the Exchange, Society, the Bank, the University, the Pixel calendar, Society's network and the Pixel 40
 
 ## Purpose and core principles
 
@@ -27,6 +27,7 @@ Sites are listed upstream first. Each may read only from sites above it in this 
 | Census Office (City `census.js`) | World loop | City, the Exchange, Society | Working lives, homes, wellbeing, student loans, mortgages |
 | Pixel Exchange (with Freight and the Bank) | World loop | City, the census register, Society | Business, prices, credit, freight; shop demand |
 | Pixel City Society (City `society.js`) | World loop | City, the Exchange, Weather | Crazes (FM, shops, Senate colour bills), migration, election swings, needs |
+| Pixel 40 share market (Exchange `shares.js`) | Reader | The Exchange (results, closures), Society's network | Nothing; no site reads share prices |
 | Bookmaker | Reader | Glacial, world loop | Its own odds and pages |
 | The newspaper | Reader | Everything | Nothing |
 | Pixel FM, Pixel High, Job Centre, University, Bank site, Museum, Universe hub | Readers | Anything upstream | Their own pages only (Pixel FM plays Society's song crazes) |
@@ -51,7 +52,7 @@ Since Society, the world loop is wider: the Senate reads Society (elections, a f
 
 ### Load order
 
-Every page that loads the Senate must load the whole chain, in this order: Weather, Senate, City `universe.js`, City `census.js`, the Exchange `universe.js`, City `society.js`. Simulation dependencies are hard: without the chain the Senate, the census and the Exchange refuse to run. Glacial's style hook and the Pixel FM widget load the chain themselves.
+Every page that loads the Senate must load the whole chain, in this order: Weather, Senate, City `universe.js`, City `census.js`, the Exchange `universe.js`, City `society.js`. Simulation dependencies are hard: without the chain the Senate, the census and the Exchange refuse to run. Glacial's style hook and the Pixel FM widget load the chain themselves. Pages that show the share market (the Exchange, the emergent behaviour log, world health) load the Exchange `shares.js` after City `society.js`; it refuses to run without the Exchange's `ledgerOf` and Society's `networkOf`.
 
 ## Time
 
@@ -129,7 +130,7 @@ Glacial already defines the shared functions in `js/sim.js`: `G.rng(seed)` (a mu
 
 ### Start dates
 
-The Pixel calendar is defined back to the epoch, so any system can count in it from its own start date. The Climate Reform (seasons on the Pixel Year) and the life clock take effect at 00:00 UTC on 1 December 2026. Each system that changes what happens declares its start date, and must be live before it: working lives 30 November 2026; freight and Society 1 December 2026; the Bank 1 February 2027; University applications 1 February 2027; migration, glitches and the University 1 March 2027; Society-driven elections from May 2027; rents 1 June 2027; wellbeing, choices and staff turnover 1 September 2027. Changes that only explain or display (causes, the map, the health dashboard) can go live at any time.
+The Pixel calendar is defined back to the epoch, so any system can count in it from its own start date. The Climate Reform (seasons on the Pixel Year) and the life clock take effect at 00:00 UTC on 1 December 2026. Each system that changes what happens declares its start date, and must be live before it: working lives 30 November 2026; freight, Society and the Exchange's revised trading rules (freight headroom, adaptive delivery rounds, input demand and market entry; see the Exchange) 1 December 2026; the Bank and the Pixel 40 1 February 2027; University applications 1 February 2027; migration, glitches and the University 1 March 2027; Society-driven elections from May 2027; rents 1 June 2027; wellbeing, choices and staff turnover 1 September 2027. Changes that only explain or display (causes, the map, the health dashboard) can go live at any time.
 
 ## Event format
 
@@ -159,7 +160,7 @@ Every site describes notable happenings as events in one shared shape, so the ne
 | `data.pixel_date` | Optional: the Pixel date of the event, e.g. `13-04-12`. `time` stays the source of truth; readers may show either. |
 | `data.causes` | Optional: why it happened, as `[{ cause, label, share }]` (share in %). Added without changing headlines; readers that know it explain the event. |
 
-Sources in use (the emergent behaviour log reads all of them, so keep `data` fields stable once published): `glacial`, `weather`, `senate`, `city`, `bookmaker`, `commerce`, `freight`, `bank`, `society`, `university`, `radio`, `paper`, `museum`.
+Sources in use (the emergent behaviour log reads all of them, so keep `data` fields stable once published): `glacial`, `weather`, `senate`, `city`, `bookmaker`, `commerce`, `freight`, `bank`, `society`, `shares`, `university`, `radio`, `paper`, `museum`.
 
 Events are generated, not stored: each site exposes a function that returns its events for a time range.
 
@@ -284,9 +285,24 @@ Every site should look and sound like it belongs to Glacial.
 
 Pixel City is a place on a screen. Businesses make and sell what pixels use (charge, colour, shading, patches, the race feed, sprites); industry is render plants, refineries, foundries and compression works; roads are data buses and the river a data stream. Districts behave like their names (see City's `look.js` and `CITY_V3.md`). New names, trades and titles should follow suit.
 
+## Society's network
+
+Society's 192 communities (twelve interests in each of sixteen districts) each know a handful of others: three in their own district, one of the same interest in a district next door, and, about one time in eight, one far across town. Ties go both ways and come from the map alone (seeds `society:net:`), so the taste run can use them without reading the economy. `PixelUniverse.society.networkOf()` returns the structure for any reader.
+
+- **Crazes travel the network.** Each community holds trendsetters, conformists and holdouts (seeds `society:thr:`), and takes a craze up as the communities it knows do, one day behind. Crazes can stall at a district's edge, leap across town on one long tie, or die where they started.
+- **Opinions travel it too, with bounded confidence.** A community listens to the communities it knows whose leanings are close to its own, never to one it has fallen out with, plus a little of its district's general talk. Districts keep their character and dissenting enclaves survive.
+- **Election swings count points, not ratios.** A party's swing is its change in support against its starting share, floored at a fifth, so a small party's gains are not counted several times over.
+- **The Pixel 40's investors are the same communities.** Each community's mix of momentum and value investors drifts with what the communities it knows are doing.
+
+## The Pixel 40
+
+On 1 February 2027 forty of the city's most valuable sound businesses list on the Pixel Exchange at 100 W a share: ten factories, ten shops, eight offices, eight warehouses and four port businesses, no two with the same name and no more than six from one district. Value investors price each business from a year of its monthly results; momentum traders follow the trend; Society's communities shift between the two as each pays, as the communities they know do, and away from a crowded trade. No share moves more than 10% in a day. A business that closes is struck off, and the next eligible business in its sector joins on the following results day (the 1st).
+
+The share market is a reader: nothing reads its prices, so it changes nothing that happens in the city. Any later link back into the world loop (firms raising money, confidence) is a deliberate, single channel with its own start date.
+
 ## World health
 
-`Universe/health.html` checks the universe holds together: every site ready, fresh data, unique and well-formed events, closures with causes, citizens counted the same way twice, no impossible balances, cross-references intact, and determinism. Run it after every deployment.
+`Universe/health.html` checks the universe holds together (including the share market): every site ready, fresh data, unique and well-formed events, closures with causes, citizens counted the same way twice, no impossible balances, cross-references intact, and determinism. Run it after every deployment.
 
 ## New site checklist and open questions
 
