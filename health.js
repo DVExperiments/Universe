@@ -8,7 +8,7 @@
   const U = window.PixelUniverse || {};
   const DAY = 86400000;
   const q = new URLSearchParams(location.search), at = q.get('at');
-  const T = at ? Date.parse(at.length <= 16 ? at + ':00Z' : at) : Date.now();
+  const T = at ? Date.parse(/^\d{4}-\d{2}-\d{2}$/.test(at) ? at + 'T00:00:00Z' : at.length <= 16 ? at + ':00Z' : at) : Date.now();
   const out = document.getElementById('checks'), sum = document.getElementById('summary');
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const rows = [];

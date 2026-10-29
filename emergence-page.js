@@ -8,7 +8,7 @@
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const q = new URLSearchParams(location.search), at = q.get('at');
-  const fixed = at ? Date.parse(at.length <= 16 ? at + ':00Z' : at) : null;
+  const fixed = at ? Date.parse(/^\d{4}-\d{2}-\d{2}$/.test(at) ? at + 'T00:00:00Z' : at.length <= 16 ? at + ':00Z' : at) : null;
   const now = () => (fixed !== null && !isNaN(fixed) ? fixed : Date.now());
   const W = U.climate, off = (t) => (W && W.offsetAt ? W.offsetAt(t) : 0);
   const fDate = new Intl.DateTimeFormat('en-NZ', { timeZone: 'UTC', day: 'numeric', month: 'long', year: 'numeric' });

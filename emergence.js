@@ -17,7 +17,7 @@
 (function (root) {
   'use strict';
 
-  const VERSION = '1.1.0';
+  const VERSION = '1.2.0';
   const H = 3600000, DAY = 86400000;
   const EPOCH = Date.UTC(2025, 11, 3);
   // the sites the watchers read; the census, the Job Centre and Pixel High are left out because replaying their whole
@@ -386,6 +386,24 @@
           out.push({ anchor: m, time: m.ms, links: caught.slice(0, 4).concat([m]),
             title: 'Momentum took the Pixel Exchange, one district at a time',
             text: 'Momentum trading caught on in ' + list(caught.map((x) => x.data.district).filter((d, i, a) => a.indexOf(d) === i).slice(0, 5)) + (caught.map((x) => x.data.district).filter((d, i, a) => a.indexOf(d) === i).length > 5 ? ' and elsewhere' : '') + ' before ' + longDate(m.ms) + ', when ' + m.data.share + '% of the city\u2019s investors were trading on it. No one persuaded the city; each community followed the ones it knows.' });
+        }
+        return out;
+      }
+    },
+    {
+      key: 'raised', name: 'Talk in the communities paid a business\u2019s bills', connection: 'linked',
+      looks: 'A listed business selling new shares, at well above what it is worth, in a district where momentum trading had caught on among the communities, and banking the money.',
+      via: 'Society\u2019s communities pick up momentum trading from the communities they know; their trading lifts their own district\u2019s shares; and from 1 March 2027 a business whose shares trade well above its worth sells new ones, and the Exchange puts the money in its accounts.',
+      example: 'Momentum trading catches on among the hobby clubs of one district. Their haulage firm\u2019s shares climb to half again what it is worth, and on results day it sells new shares and banks twenty thousand watts.',
+      find(R, t) {
+        const out = [];
+        for (const z of R('shares.raise').filter((x) => x.ms <= t)) {
+          const c = R('shares.catches').filter((x) => x.data.district === z.data.district && x.ms < z.ms).slice(-1)[0];
+          if (!c || R('shares.cools').some((x) => x.data.district === z.data.district && x.ms > c.ms && x.ms < z.ms)) continue;
+          out.push({ anchor: z, time: z.ms, links: [c, z],
+            title: 'Momentum in ' + z.data.district + ' paid for ' + z.data.firm,
+            text: 'Momentum trading caught on in ' + c.data.district + ' on ' + longDate(c.ms) + ', led by the ' + c.data.community + '. By ' + longDate(z.ms) + ' ' + z.data.firm + '\u2019s shares traded at ' + z.data.premium + '% above what the business was worth, and it sold new ones, banking ' +
+              z.data.amount.toLocaleString('en') + ' W the next day. The communities only ever changed how they traded; the business ended up with real money.' });
         }
         return out;
       }
