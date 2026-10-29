@@ -27,7 +27,7 @@ Sites are listed upstream first. Each may read only from sites above it in this 
 | Census Office (City `census.js`) | World loop | City, the Exchange, Society | Working lives, homes, wellbeing, student loans, mortgages |
 | Pixel Exchange (with Freight and the Bank) | World loop | City, the census register, Society | Business, prices, credit, freight; shop demand |
 | Pixel City Society (City `society.js`) | World loop | City, the Exchange, Weather | Crazes (FM, shops, Senate colour bills), migration, election swings, needs |
-| Pixel 40 share market (Exchange `shares.js`) | Reader | The Exchange (results, closures), Society's network | Nothing; no site reads share prices |
+| Pixel 40 share market (part of the Exchange `universe.js`) | World loop | The Exchange (results, closures, finished days only), Society's network | From 1 March 2027, cash raised by listed businesses (banked by the Exchange the next day); nothing else |
 | Bookmaker | Reader | Glacial, world loop | Its own odds and pages |
 | The newspaper | Reader | Everything | Nothing |
 | Pixel FM, Pixel High, Job Centre, University, Bank site, Museum, Universe hub | Readers | Anything upstream | Their own pages only (Pixel FM plays Society's song crazes) |
@@ -48,11 +48,12 @@ Since Society, the world loop is wider: the Senate reads Society (elections, a f
 - **Never read ahead.** A run may only ask another for days it has already finished. Reading City's history 30 days ahead for speed once caused infinite recursion; everything that touches the Senate is read one day at a time.
 - **Taste and opinion are separate runs.** Society's crazes read only the map and the weather, so Pixel FM, the Exchange and the Senate can read them freely; its opinions read the economy and are read by the Senate with a fortnight's lag.
 - **Forward runs are re-entrant for earlier days.** A nested question about an earlier day is answered from checkpoints, never by moving the running state, and never by reading the running state either: a run that has moved on must answer for an earlier day from what it recorded then (City keeps the state at the start of each day; Society keeps each day's rivalries).
+- **The share market reads only finished days.** On its day k the Exchange may ask the market only about earlier days, and the market reads the Exchange only up to the start of its own day, so the two never wait on each other.
 - **One answer per moment.** A figure cached for a whole day is computed at a fixed moment of that day (its start), never at whichever moment happened to be asked first.
 
 ### Load order
 
-Every page that loads the Senate must load the whole chain, in this order: Weather, Senate, City `universe.js`, City `census.js`, the Exchange `universe.js`, City `society.js`. Simulation dependencies are hard: without the chain the Senate, the census and the Exchange refuse to run. Glacial's style hook and the Pixel FM widget load the chain themselves. Pages that show the share market (the Exchange, the emergent behaviour log, world health) load the Exchange `shares.js` after City `society.js`; it refuses to run without the Exchange's `ledgerOf` and Society's `networkOf`.
+Every page that loads the Senate must load the whole chain, in this order: Weather, Senate, City `universe.js`, City `census.js`, the Exchange `universe.js`, City `society.js`. Simulation dependencies are hard: without the chain the Senate, the census and the Exchange refuse to run. Glacial's style hook and the Pixel FM widget load the chain themselves. The share market lives inside the Exchange's `universe.js`, so every page that loads the chain runs it; the Exchange's history depends on it from 1 March 2027. The old `Exchange/shares.js` is an empty placeholder kept so older pages still load.
 
 ## Time
 
@@ -110,7 +111,7 @@ const month = Math.floor(dayOfYear / 30) + 1, day = (dayOfYear % 30) + 1;
 - **The life clock.** Lengths of a life are measured on `pixel.toLife(t)`: a clock that runs one 365.25-day year per calendar month from the adoption and is the ordinary clock before it. A site adds a duration with `pixel.add(t, span)` and measures an age with `pixel.years(birth, t)` (the census exposes the same as `ageAt` and `lifeClock`). History before the adoption is unchanged, and every moment handed between sites stays a real moment.
 - **The world loop still steps one real day at a time.** Each step covers about twelve pixel days; systems that count in pixel time advance by however many pixel days the step actually contains (from `G.pixelTime`), never by a fixed twelve.
 - **Lives are quoted in Pixel Years.** A 25-Year mortgage runs just over two real years, a three-Year degree three real months. The Senate keeps its real calendar: elections twice a year are, in Pixel terms, six-Year terms, and the fortnight's lag on election swings is about half a Pixel Year of opinion slowly settling.
-- **Lifespans:** the census's existing life tables, now counted in Pixel Years: Pixel High for Years 9 to 13, working life from 18, retirement at 67 (from 60 early), and a median age at going dark of about 80 Pixel Years (under seven real years). About 600 pixels are lit and 550 go dark each real month. See Open questions.
+- **Lifespans:** decided: pixels live about as long as people, counted in Pixel Years. From the life clock's start (1 December 2026) the census's life table gives a median age at going dark of 79 and an average of 77; about one pixel in eight reaches 90. Pixel High for Years 9 to 13, working life from 18, retirement at 67 (from 60 early). A whole life lasts about six and a half real years, so a watcher follows a generation rather than a life. At first about 660 pixels are lit and 680 go dark each real month, so the city slowly shrinks unless conditions for new pixels improve.
 - **The sixteen Glacial pixels stand outside the Pixel calendar.** They never age, which the press treats as a matter of quiet civic pride.
 - **Display:** pages show pixel dates for lives and institutions, and real UTC or local times for races, betting and sittings. The newspaper dates each edition both ways.
 
@@ -130,7 +131,7 @@ Glacial already defines the shared functions in `js/sim.js`: `G.rng(seed)` (a mu
 
 ### Start dates
 
-The Pixel calendar is defined back to the epoch, so any system can count in it from its own start date. The Climate Reform (seasons on the Pixel Year) and the life clock take effect at 00:00 UTC on 1 December 2026. Each system that changes what happens declares its start date, and must be live before it: working lives 30 November 2026; freight, Society and the Exchange's revised trading rules (freight headroom, adaptive delivery rounds, input demand and market entry; see the Exchange) 1 December 2026; the Bank and the Pixel 40 1 February 2027; University applications 1 February 2027; migration, glitches and the University 1 March 2027; Society-driven elections from May 2027; rents 1 June 2027; wellbeing, choices and staff turnover 1 September 2027. Changes that only explain or display (causes, the map, the health dashboard) can go live at any time.
+The Pixel calendar is defined back to the epoch, so any system can count in it from its own start date. The Climate Reform (seasons on the Pixel Year) and the life clock take effect at 00:00 UTC on 1 December 2026. Each system that changes what happens declares its start date, and must be live before it: working lives 30 November 2026; freight, Society and the Exchange's revised trading rules (freight headroom, adaptive delivery rounds, input demand and market entry; see the Exchange) 1 December 2026; the Bank and the Pixel 40 1 February 2027; businesses raising money on the Pixel 40 1 March 2027; University applications 1 February 2027; migration, glitches and the University 1 March 2027; Society-driven elections from May 2027; rents 1 June 2027; wellbeing, choices and staff turnover 1 September 2027. Changes that only explain or display (causes, the map, the health dashboard) can go live at any time.
 
 ## Event format
 
@@ -298,7 +299,7 @@ Society's 192 communities (twelve interests in each of sixteen districts) each k
 
 On 1 February 2027 forty of the city's most valuable sound businesses list on the Pixel Exchange at 100 W a share: ten factories, ten shops, eight offices, eight warehouses and four port businesses, no two with the same name and no more than six from one district. Value investors price each business from a year of its monthly results; momentum traders follow the trend; Society's communities shift between the two as each pays, as the communities they know do, and away from a crowded trade. No share moves more than 10% in a day. A business that closes is struck off, and the next eligible business in its sector joins on the following results day (the 1st).
 
-The share market is a reader: nothing reads its prices, so it changes nothing that happens in the city. Any later link back into the world loop (firms raising money, confidence) is a deliberate, single channel with its own start date.
+The market has exactly one channel back into the city, from 1 March 2027: on results day a listed business whose shares close at least 40% above its worth sells a tenth more shares at that price (no more than once in six months), and the Exchange banks the money the next day. A bubble can therefore keep a weak business going for longer, and the new cash, by raising its worth, narrows the premium that allowed it. Nothing else about share prices touches the city; any further channel would be a deliberate decision with its own start date.
 
 ## World health
 
@@ -329,4 +330,4 @@ Open questions:
 - [x] Senate first sitting: proposed for 3 December 2026, Glacial's first anniversary, at 19:00 UTC (8am NZ).
 - [ ] Bankroll: hoarding allowed, full wallet reset at each Great Settlement on 1 January (decided; see Visitor bankroll).
 - [x] Seasons: Southern Hemisphere on the Pixel Year from the Climate Reform (1 December 2026), with a city-influenced ecosystem (see Weather, climate and ecosystem).
-- [ ] Pixel lifespans: the census's life tables give a median of about 80 Pixel Years (under seven real years). Shorter lives (25 to 30 Years) would let a whole life be followed within two to three real years, but would need new life tables before 1 December 2026.
+- [x] Pixel lifespans: about 75 to 80 Pixel Years (median 79, average 77), from the census's life table; lives are followed across a generation (see Pixel time).
